@@ -1,0 +1,11 @@
+.env
+.env.local
+# Bỏ qua các file cấu hình của VS Code
+.vscode/
+
+# Bỏ qua tất cả các file dữ liệu CSV thu thập được
+*.csv
+*.bak
+*.json
+
+__pycache__/
