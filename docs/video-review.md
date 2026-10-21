@@ -1,54 +1,59 @@
-# Lọc đúng đối tượng nhạc AI
+# Lọc nhạc AI tự động
 
-Tìm kiếm YouTube chỉ tạo danh sách ứng viên. `keyword` là từ khóa đã dùng để tìm,
-không phải nhãn nội dung. Cờ `contains_synthetic_media` cũng có thể nói về hình ảnh
-hoặc nội dung tổng hợp khác, không đủ để kết luận âm nhạc do AI tạo.
+Không cần mở CSV hay điền nhãn video bằng tay. Từ khóa tìm kiếm, tên kênh và cờ
+`contains_synthetic_media` không được dùng riêng lẻ để kết luận âm nhạc do AI tạo.
 
-`data/core/` giữ dữ liệu ứng viên sau khử trùng/làm sạch văn bản. Lớp dùng cho
-gán nhãn và phân tích là `data/curated/`: chỉ chứa video đã được duyệt, cùng
-bình luận và snapshot liên quan. Các file Core và Staging không bị xóa/sửa.
-
-## Với dữ liệu đã có
-
-Chạy tại thư mục repository (trong Docker bỏ tiền tố `YTB_DATA_DIR=...` vì
-container đã gắn dữ liệu vào `/opt/airflow/data`):
+Chạy tại thư mục repository:
 
 ```bash
-YTB_DATA_DIR="$PWD/data" python -m ytb.curate export
+YTB_DATA_DIR="$PWD/data" python -m ytb.curate
 ```
 
-Mở `data/review/videos.csv` bằng Excel/Sheets. Cột `suggestion` và `reason` chỉ
-là gợi ý ưu tiên kiểm tra, không tự động duyệt. Danh sách được sắp theo
-`n_comments` giảm dần; có thể ưu tiên video có bình luận để làm sạch bộ mẫu đang có.
-Điền cột `decision`:
-
-- `include`: xác nhận đây là tác phẩm âm nhạc được AI tạo/hát/cover, phù hợp
-  phạm vi nghiên cứu. Kiểm tra video, mô tả và nguồn công bố khi cần.
-- `exclude`: video thường, hướng dẫn công cụ, review/tin tức, hoặc ngoài phạm vi.
-- Để trống: chưa xác minh được; tạm thời không đưa vào dữ liệu phân tích.
-
-Chữ “ai” trong tiếng Việt, hashtag, tên kênh và kết quả tìm kiếm không đủ để
-xác nhận. Nếu chỉ nghiên cứu nhạc Việt, loại cả tác phẩm AI ngoài phạm vi ngôn ngữ.
-Ghi căn cứ hoặc trường hợp khó vào cột `note`; không sửa `video_id`.
+Hoặc trong Docker của project:
 
 ```bash
-YTB_DATA_DIR="$PWD/data" python -m ytb.curate apply
-YTB_DATA_DIR="$PWD/data" python -m ytb.make_label_sample
+docker compose --profile debug run --rm airflow-cli python -m ytb.curate
 ```
 
-Lệnh `apply` lọc đồng bộ ba bảng theo danh sách `video_id` được duyệt và xuất
-thống kê giữ/loại vào `data/curated/review.json`. Nó thay lớp curated sau khi ghi
-xong, giữ nguyên schema và không thay Core. Chưa có video được duyệt thì lệnh
-báo lỗi và giữ nguyên curated cũ; không dùng curated cũ sau khi sửa quyết định mà
-chưa chạy lại `apply`. Kiểm tra timestamp và thống kê của lần xuất thành công.
+Bộ lọc đọc metadata của `data/core/videos`, tự tạo ba nhóm:
 
-## Những lần thu thập sau
+- `include`: có bằng chứng cụ thể về nhạc/giọng hát/cover AI trong tiêu đề hoặc
+  mô tả, hoặc tiêu đề nêu công cụ tạo nhạc Suno/Udio.
+- `exclude`: tiêu đề chỉ rõ nội dung hướng dẫn, game, review phim hoặc test loa.
+- `uncertain`: thiếu bằng chứng, chỉ có tags/cờ synthetic, chỉ thấy hình ảnh AI,
+  hoặc có thông tin phủ định việc dùng AI. Nhóm này tự động được tách khỏi tập
+  phân tích; không cần người dùng duyệt để hoàn thành lệnh.
 
-DAG có bước `curate_videos` sau `spark_core`. Bước này cập nhật danh sách duyệt
-(giữ quyết định và ghi chú cũ), sau đó xuất curated. Video mới chưa duyệt được
-tạm loại khỏi curated. Nếu chưa có quyết định `include`, bước này thất bại để
-không chạy tiếp phân tích trên dữ liệu chưa duyệt. Các bước Business/Mart khi
-triển khai cần đọc `data/curated/`, không đọc trực tiếp Core.
+Ví dụ “AI cover mechanics” trong game bị loại, “Ai là người đang hát?” không
+được coi là giọng hát AI. “Nhạc và ca sĩ: Suno AI” là bằng chứng về âm thanh.
+Quy tắc được chuẩn hóa Unicode và cách viết `A.I` trước khi so khớp.
 
-Các phiếu gán nhãn đã xuất trước đây không tự cập nhật. Giữ lại để đối chiếu;
-tạo bộ phiếu mới sau khi duyệt, tránh ghi đè nhãn đã chấm bằng `--force`.
+Kết quả:
+
+```text
+data/curated/videos/           # video được tự động giữ
+data/curated/comments/         # bình luận chỉ thuộc các video được giữ
+data/curated/video_snapshots/  # snapshot cùng tập video
+data/curated/classification.csv # phân loại, lý do và bằng chứng cho mọi video
+data/curated/uncertain.csv     # các trường hợp thiếu bằng chứng
+data/curated/review.json       # phiên bản bộ lọc, thời gian và số dòng giữ/loại
+```
+
+`data/review/videos.csv` cũng được cập nhật thành **báo cáo tự động**, không còn
+là biểu mẫu cần điền. Lệnh `apply` cũ là bí danh của chế độ tự động; không đọc
+quyết định gán tay từ CSV. `export` chỉ xuất báo cáo phân loại, không xuất Parquet.
+
+Bộ lọc dựa trên khai báo trong metadata, chưa kiểm chứng âm thanh thực tế, nên
+không phải nhãn chuẩn hay cam kết chính xác 100%. Video không khai báo AI có
+thể bị tách sang uncertain dù thực sự là nhạc AI. Bộ lọc không tự suy ra ngôn ngữ
+hay quốc tịch người nghe từ `regionCode`/`relevanceLanguage`.
+
+Core và Staging gốc được giữ nguyên. Đầu ra mới được ghi hoàn chỉnh vào thư mục
+tạm rồi thay lớp curated; nếu không có video phù hợp thì xuất bảng rỗng để không
+vô tình dùng lại kết quả cũ. Còn `curated.old` sau sự cố thì cần khôi phục trước
+khi chạy tiếp. Bộ lọc không hỗ trợ hai tiến trình ghi curated đồng thời.
+
+DAG tự chạy `curate_videos` sau `spark_core`. Bước lấy mẫu gán nhãn **cảm xúc**
+đọc curated và kiểm tra báo cáo đi kèm; việc gán cảm xúc là bước nghiên cứu khác,
+không phải yêu cầu gán tay nhãn video AI. Các phiếu cảm xúc đã xuất trước đây
+không tự thay đổi; cần tạo bộ mới để sử dụng tập video đã lọc.

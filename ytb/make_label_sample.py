@@ -1,4 +1,4 @@
-"""Lấy mẫu bình luận từ data/curated (video đã duyệt) để nhóm gán nhãn cảm xúc bằng tay.
+"""Lấy mẫu bình luận từ data/curated (nhạc AI đã lọc tự động) để nhóm gán nhãn cảm xúc.
 
 Cách chia: một nhóm bình luận CHUNG (mọi người cùng chấm, dùng để đo độ đồng thuận giữa người chấm)
 và mỗi người một nhóm RIÊNG (không trùng nhau). Mỗi video tối đa --cap bình luận để mẫu trải đều.
@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import csv
 import html
+import json
 import random
 import re
 from collections import defaultdict
@@ -23,7 +24,7 @@ from pathlib import Path
 import pyarrow.dataset as ds
 
 from . import config
-from .curate import read_decisions
+from .curate import METHOD
 
 LABELS = ("tich_cuc", "tieu_cuc", "trung_lap", "khong_xac_dinh")
 _BR = re.compile(r"<br\s*/?>", re.I)
@@ -43,12 +44,16 @@ def display_text(raw: str) -> str:
 def load_candidates() -> list[dict]:
     folder = config.DATA_DIR / "curated" / "comments"
     if not folder.exists():
-        raise SystemExit("Chưa có dữ liệu đã duyệt. Chạy python -m ytb.curate export, duyệt videos.csv rồi chạy python -m ytb.curate apply.")
+        raise SystemExit("Chưa có dữ liệu lọc tự động. Chạy python -m ytb.curate trước.")
     cols = ["comment_id", "video_id", "is_reply", "text_raw", "text_clean", "is_modelable", "source"]
     rows = ds.dataset(str(folder), format="parquet").to_table(columns=cols).to_pylist()
-    approved = {vid for vid, row in read_decisions().items() if row["decision"] == "include"}
-    if not approved or any(r["video_id"] not in approved for r in rows):
-        raise SystemExit("Danh sách duyệt chưa hợp lệ hoặc đã thay đổi. Chạy python -m ytb.curate apply trước khi lấy mẫu.")
+    report = config.DATA_DIR / "curated" / "review.json"
+    if not report.exists():
+        raise SystemExit("Thiếu báo cáo lọc tự động. Chạy python -m ytb.curate trước.")
+    metadata = json.loads(report.read_text(encoding="utf-8"))
+    approved = set(metadata.get("included_video_ids", []))
+    if metadata.get("method") != METHOD or not approved or any(r["video_id"] not in approved for r in rows):
+        raise SystemExit("Dữ liệu và báo cáo lọc không khớp. Chạy python -m ytb.curate trước khi lấy mẫu.")
     rows = [r for r in rows if r["text_clean"]]          # bỏ bình luận rỗng sau khi làm sạch
     vfolder = config.DATA_DIR / "curated" / "videos"
     info: dict = {}

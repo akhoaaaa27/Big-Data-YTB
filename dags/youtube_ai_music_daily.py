@@ -2,7 +2,7 @@
 DAG chính: thu thập và xử lý phản ứng khán giả Việt Nam với nhạc AI trên YouTube.
 
 BƯỚC 2: ba task thu thập đã chạy thật (ghi Parquet vào data/staging/).
-Core đã xử lý; curate_videos chỉ giữ video được duyệt. Business, Mart và publish còn là khung.
+Core đã xử lý; curate_videos lọc nhạc AI tự động. Business, Mart và publish còn là khung.
 
   discover_videos -> snapshot_stats -> fetch_comments
       -> spark_core -> curate_videos -> spark_business -> spark_mart -> publish
@@ -65,10 +65,10 @@ with DAG(
 
     @task
     def curate_videos():
-        from ytb.curate import apply_review, export_review
+        from ytb.curate import run_auto
 
-        export_review()
-        return apply_review()
+        result = run_auto()
+        return {k: v for k, v in result.items() if k != "included_video_ids"}
 
     @task
     def spark_business():

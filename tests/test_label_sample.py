@@ -1,10 +1,12 @@
 import csv
+import json
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 
 from ytb import config, make_label_sample as ls
+from ytb.curate import METHOD
 
 
 @pytest.fixture
@@ -21,12 +23,7 @@ def core():
     pq.write_table(pa.Table.from_pylist(rows), d / "comments" / "part-0.parquet")
     pq.write_table(pa.Table.from_pylist([{"video_id": f"v{v}", "title": f"Video {v}", "keyword": "nhạc ai"} for v in range(40)]),
                    d / "videos" / "part-0.parquet")
-    review = config.DATA_DIR / "review" / "videos.csv"
-    review.parent.mkdir()
-    with review.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["video_id", "decision"])
-        writer.writerows([[f"v{v}", "include"] for v in range(40)])
+    (d / "review.json").write_text(json.dumps({"method": METHOD, "included_video_ids": [f"v{v}" for v in range(40)]}))
 
 
 def read(name):
@@ -67,8 +64,10 @@ def test_bao_loi_khi_khong_du_binh_luan(core):
         ls.run(["A", "B", "C", "D"], 50, 62, cap=1, seed=1)                # 40 video x cap 1 = 40 < 298
 
 
-def test_khong_lay_mau_tu_curated_cu_sau_khi_thu_hoi_duyet(core):
-    review = config.DATA_DIR / "review" / "videos.csv"
-    review.write_text(review.read_text().replace("v0,include", "v0,exclude"))
-    with pytest.raises(SystemExit, match="đã thay đổi"):
+def test_khong_lay_mau_khi_bao_cao_loc_khong_khop(core):
+    report = config.DATA_DIR / "curated" / "review.json"
+    metadata = json.loads(report.read_text())
+    metadata["included_video_ids"].remove("v0")
+    report.write_text(json.dumps(metadata))
+    with pytest.raises(SystemExit, match="không khớp"):
         ls.load_candidates()
