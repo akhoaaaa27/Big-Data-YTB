@@ -9,7 +9,7 @@ from ytb import config, make_label_sample as ls
 
 @pytest.fixture
 def core():
-    d = config.DATA_DIR / "core"
+    d = config.DATA_DIR / "curated"
     (d / "comments").mkdir(parents=True)
     (d / "videos").mkdir(parents=True)
     rows = []
@@ -21,6 +21,12 @@ def core():
     pq.write_table(pa.Table.from_pylist(rows), d / "comments" / "part-0.parquet")
     pq.write_table(pa.Table.from_pylist([{"video_id": f"v{v}", "title": f"Video {v}", "keyword": "nhạc ai"} for v in range(40)]),
                    d / "videos" / "part-0.parquet")
+    review = config.DATA_DIR / "review" / "videos.csv"
+    review.parent.mkdir()
+    with review.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["video_id", "decision"])
+        writer.writerows([[f"v{v}", "include"] for v in range(40)])
 
 
 def read(name):
@@ -59,3 +65,10 @@ def test_cung_seed_ra_cung_mau_va_khong_ghi_de(core):
 def test_bao_loi_khi_khong_du_binh_luan(core):
     with pytest.raises(SystemExit):
         ls.run(["A", "B", "C", "D"], 50, 62, cap=1, seed=1)                # 40 video x cap 1 = 40 < 298
+
+
+def test_khong_lay_mau_tu_curated_cu_sau_khi_thu_hoi_duyet(core):
+    review = config.DATA_DIR / "review" / "videos.csv"
+    review.write_text(review.read_text().replace("v0,include", "v0,exclude"))
+    with pytest.raises(SystemExit, match="đã thay đổi"):
+        ls.load_candidates()
