@@ -1,0 +1,345 @@
+{
+  "status": "passed",
+  "rows": 73247,
+  "columns": [
+    "comment_id",
+    "video_id",
+    "thread_id",
+    "parent_id",
+    "is_reply",
+    "author_channel_id",
+    "text_raw",
+    "text_clean",
+    "tokens",
+    "n_tokens",
+    "like_count",
+    "total_reply_count",
+    "source",
+    "published_at",
+    "updated_at",
+    "published_date",
+    "is_modelable",
+    "processed_at"
+  ],
+  "real_rows_unchanged": 48809,
+  "synthetic_rows_revised": 24438,
+  "seed": 20261021,
+  "structure_counts": {
+    "question": 4888,
+    "long_opinion": 8553,
+    "short": 7331,
+    "exclamation": 3666
+  },
+  "synthetic_sentiment_design": {
+    "positive": 17140,
+    "neutral": 4872,
+    "negative": 2426
+  },
+  "word_length_bands": {
+    "1-3": 2948,
+    "21+": 8553,
+    "4-8": 8084,
+    "9-20": 4853
+  },
+  "unique_synthetic_clean_text": 18651,
+  "max_same_clean_text": 24,
+  "modelable_synthetic": 20424,
+  "opening_metrics": {
+    "first_word": {
+      "max_count": 977,
+      "max_fraction": 0.03997872166298388,
+      "cap_count": 977,
+      "top_10": [
+        [
+          "minh",
+          977
+        ],
+        [
+          "phan",
+          977
+        ],
+        [
+          "co",
+          977
+        ],
+        [
+          "cach",
+          977
+        ],
+        [
+          "ban",
+          977
+        ],
+        [
+          "ad",
+          866
+        ],
+        [
+          "doan",
+          765
+        ],
+        [
+          "giong",
+          724
+        ],
+        [
+          "bai",
+          553
+        ],
+        [
+          "mau",
+          365
+        ]
+      ]
+    },
+    "first_2_words": {
+      "max_count": 464,
+      "max_fraction": 0.018986823799001556,
+      "cap_count": 610,
+      "top_10": [
+        [
+          "minh thich",
+          464
+        ],
+        [
+          "co ban",
+          435
+        ],
+        [
+          "bai nay",
+          403
+        ],
+        [
+          "thong tin",
+          325
+        ],
+        [
+          "ad co",
+          282
+        ],
+        [
+          "y tuong",
+          264
+        ],
+        [
+          "giai dieu",
+          209
+        ],
+        [
+          "vua nghe",
+          200
+        ],
+        [
+          "ad dung",
+          178
+        ],
+        [
+          "giong nay",
+          174
+        ]
+      ]
+    },
+    "first_3_words": {
+      "max_count": 186,
+      "max_fraction": 0.007611097471151486,
+      "cap_count": 610,
+      "top_10": [
+        [
+          "minh thich cach",
+          186
+        ],
+        [
+          "co ban tach",
+          158
+        ],
+        [
+          "ad co ban",
+          155
+        ],
+        [
+          "ad dung giong",
+          151
+        ],
+        [
+          "cach dung ai",
+          120
+        ],
+        [
+          "co ai thay",
+          118
+        ],
+        [
+          "thong tin ban",
+          118
+        ],
+        [
+          "duong giai dieu",
+          112
+        ],
+        [
+          "hat hay thiet",
+          112
+        ],
+        [
+          "hinh anh mv",
+          109
+        ]
+      ]
+    },
+    "first_5_words": {
+      "max_count": 112,
+      "max_fraction": 0.004583026434241755,
+      "cap_count": 610,
+      "top_10": [
+        [
+          "hat hay thiet",
+          112
+        ],
+        [
+          "vua nghe da nho",
+          104
+        ],
+        [
+          "da cai tai",
+          101
+        ],
+        [
+          "luu lai nghe tiep",
+          100
+        ],
+        [
+          "xin that su luon",
+          99
+        ],
+        [
+          "me doan nay qua",
+          95
+        ],
+        [
+          "bai nay on ap",
+          94
+        ],
+        [
+          "doan nay noi da ga",
+          93
+        ],
+        [
+          "cover nay dung mau giong",
+          93
+        ],
+        [
+          "vo tay cho ad",
+          91
+        ]
+      ]
+    },
+    "first_clause": {
+      "max_count": 112,
+      "max_fraction": 0.004583026434241755,
+      "cap_count": 610,
+      "top_10": [
+        [
+          "hat hay thiet",
+          112
+        ],
+        [
+          "vua nghe da nho",
+          104
+        ],
+        [
+          "da cai tai",
+          101
+        ],
+        [
+          "luu lai nghe tiep",
+          100
+        ],
+        [
+          "xin that su luon",
+          99
+        ],
+        [
+          "me doan nay qua",
+          95
+        ],
+        [
+          "bai nay on ap",
+          94
+        ],
+        [
+          "doan nay noi da ga",
+          93
+        ],
+        [
+          "cover nay dung mau giong nao nhi",
+          93
+        ],
+        [
+          "vo tay cho ad",
+          91
+        ]
+      ]
+    }
+  },
+  "examples": {
+    "short": [
+      "đã cái tai 👍",
+      "Nghe muốn khóc luôn",
+      "Cảm giác nghe cuốn thật thiệt 👏",
+      "Phần điện tử mượt thật 👏",
+      "cưng bài này ghê",
+      "Đã cái tai 👍",
+      "bài nhạc nghe thư giãn ghê",
+      "Thông tin bản quyền rõ ràng ghê thiệt ❤️"
+    ],
+    "exclamation": [
+      "Ơ vậy à!! 🎵",
+      "trời ơi hay!!! 💖",
+      "lại có bản mới mọi người ơi...",
+      "ồ bản phối mới!!! 🤔",
+      "Ù TAI MẤT!!",
+      "À biết rồi!!! 🎧",
+      "mê luôn! 🎶",
+      "Ngọt quá trời"
+    ],
+    "question": [
+      "cover này dùng mẫu giọng nào nhỉ? giọng cover có nét riêng! 👏",
+      "Giai điệu này AI tự viết à? đoạn nhạc mượt ghê! ❤️",
+      "bạn nào rành cho hỏi: có bản âm thanh chất lượng cao không ad?",
+      "cover này dùng mẫu giọng nào nhỉ? bản cover nghe cuốn đó! ❤️",
+      "Giọng này là AI hoàn toàn à? giọng hát ấm thật!",
+      "Lớp bè nghe đầy đặn, có bản tách lớp bè không ad? ✨",
+      "Giọng AI có chỉnh cảm xúc riêng được không? không khí bài thấm ghê!",
+      "có ai thấy cách dẫn bài hụt hẫng ghê không? 😕"
+    ],
+    "long_opinion": [
+      "Mình đánh giá cao cách chọn từ, lời Việt có vần mà không quá sáo. Làm tiếp những sản phẩm như vậy nhé. Tan ca bật lên nghe, tâm trạng cũng ảnh hưởng cảm nhận khá nhiều. 🥰",
+      "Mình đánh giá cao việc ghi rõ tác giả và xin phép sử dụng ca khúc cho bản AI. Dù thích hay chưa thích thì cũng muốn góp ý vào từng chỗ cụ thể. ❤️",
+      "Lời việt: ca từ giản dị mà có ý nghĩa, vài câu diễn tả đúng điều mình đang nghĩ. Cảm giác sau khi nghe khá dễ chịu.",
+      "Buổi tối ngồi yên nghe mới chú ý được các chi tiết nhỏ. Mình đánh giá cao việc ghi rõ tác giả và xin phép sử dụng ca khúc cho bản AI. 🥰",
+      "Bản demo: công cụ AI làm việc sáng tác dễ tiếp cận hơn, mình thấy đây là cơ hội tốt. Tui muốn giới thiệu bản này cho bạn bè. 🎶",
+      "Màu ballad pha điện tử được kết hợp rất hợp tai, mình thích hướng này. Cứ đến điệp khúc là cảm giác nghe khác hẳn phần đầu. 💖",
+      "Nét riêng: bài nhạc có vài đoạn bất ngờ rất thú vị, AI được dùng đúng chỗ. Cảm ơn người làm nhạc đã chia sẻ. ❤️",
+      "Ad sửa bản nháp của ai nhiều không? Mình thích cách tác giả thử những âm sắc mới thay vì dùng công thức quen thuộc. Càng nghe kỹ càng nhận ra vài chỗ khác với ấn tượng ban đầu. ❤️"
+    ]
+  },
+  "generation_attempts": 25376,
+  "opening_normalization": "case/punctuation/accent folded; quotas on synthetic rows only",
+  "source_sha256": "34a1bcd430a2abdeaa5f0346e650fa509aa1129c5fcf03d1e033d914eaf4999a",
+  "preserved_fields": "All real rows; synthetic IDs, dates, authors, source, likes and thread fields",
+  "note": "Still template-generated; design labels are not independent human annotations. Generic short reactions have no explicit aspect.",
+  "independent_verification": "passed: serialized data, all real rows identical, synthetic non-text fields identical, CSV counts, opening metrics",
+  "gsdmm_smoke": {
+    "iterations": 1,
+    "funnel": {
+      "input": 1004,
+      "modelable": 654,
+      "without_replies": 555,
+      "unique_text": 551,
+      "after_vi_heuristic": 492,
+      "after_video_cap": 492,
+      "training": 475
+    },
+    "active_topics": 20
+  }
+}
