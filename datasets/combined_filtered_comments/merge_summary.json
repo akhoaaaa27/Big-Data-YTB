@@ -1,0 +1,54 @@
+{
+  "input": "/workspace/Big-Data-YTB/data/source_comparison",
+  "output": "/workspace/Big-Data-YTB/data/combined_filtered_comments",
+  "seed": 42,
+  "input_sha256_before": "e20b15103be8514ecd8f26c8b20f515b493eacfade3707c054043d7f644d6d1e",
+  "input_sha256_after": "e20b15103be8514ecd8f26c8b20f515b493eacfade3707c054043d7f644d6d1e",
+  "tasks": {
+    "topics": {
+      "rows": 12895,
+      "columns": 18,
+      "source_counts": {
+        "legacy_csv": 459,
+        "api": 137,
+        "synthetic": 12299
+      },
+      "duplicate_text_clean": 0
+    },
+    "sentiment": {
+      "rows": 23611,
+      "columns": 18,
+      "source_counts": {
+        "legacy_csv": 882,
+        "api": 534,
+        "synthetic": 22195
+      },
+      "duplicate_text_clean": 5097
+    }
+  },
+  "columns": [
+    "comment_id",
+    "video_id",
+    "thread_id",
+    "parent_id",
+    "is_reply",
+    "author_channel_id",
+    "text_raw",
+    "text_clean",
+    "tokens",
+    "n_tokens",
+    "like_count",
+    "total_reply_count",
+    "source",
+    "published_at",
+    "updated_at",
+    "published_date",
+    "is_modelable",
+    "processed_at"
+  ],
+  "values_preserved": true,
+  "date_values_preserved": true,
+  "new_origin_columns": false,
+  "training": "One combined model; global text deduplication and rare-word filtering happen in train_topics",
+  "limitation": "Mixed real and synthetic data; topic prevalence is not evidence about real audiences alone."
+}

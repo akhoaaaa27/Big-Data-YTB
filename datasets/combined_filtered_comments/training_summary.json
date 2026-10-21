@@ -1,0 +1,178 @@
+{
+  "source": "/workspace/Big-Data-YTB/data/combined_filtered_comments/topics/comments",
+  "seed": 42,
+  "k": 20,
+  "alpha": 0.1,
+  "beta": 0.1,
+  "iterations": 30,
+  "min_word_freq": 2,
+  "vi_heuristic": false,
+  "language_filter_method": "disabled",
+  "cap_per_video": null,
+  "funnel": {
+    "input": 12895,
+    "modelable": 12895,
+    "without_replies": 12895,
+    "unique_text": 12895,
+    "after_vi_heuristic": 12895,
+    "after_video_cap": 12895,
+    "training": 12893
+  },
+  "vocabulary_size": 1655,
+  "active_topics": 20,
+  "videos": 646,
+  "top_video_fraction": 0.003335143100907469,
+  "top_10_video_fraction": 0.02924067323353758,
+  "history": [
+    {
+      "iteration": 1,
+      "moved": 11867,
+      "active_topics": 20
+    },
+    {
+      "iteration": 2,
+      "moved": 5750,
+      "active_topics": 20
+    },
+    {
+      "iteration": 3,
+      "moved": 2726,
+      "active_topics": 20
+    },
+    {
+      "iteration": 4,
+      "moved": 1862,
+      "active_topics": 20
+    },
+    {
+      "iteration": 5,
+      "moved": 1520,
+      "active_topics": 20
+    },
+    {
+      "iteration": 6,
+      "moved": 1341,
+      "active_topics": 20
+    },
+    {
+      "iteration": 7,
+      "moved": 1262,
+      "active_topics": 20
+    },
+    {
+      "iteration": 8,
+      "moved": 1134,
+      "active_topics": 20
+    },
+    {
+      "iteration": 9,
+      "moved": 1089,
+      "active_topics": 20
+    },
+    {
+      "iteration": 10,
+      "moved": 1068,
+      "active_topics": 20
+    },
+    {
+      "iteration": 11,
+      "moved": 981,
+      "active_topics": 20
+    },
+    {
+      "iteration": 12,
+      "moved": 978,
+      "active_topics": 20
+    },
+    {
+      "iteration": 13,
+      "moved": 979,
+      "active_topics": 20
+    },
+    {
+      "iteration": 14,
+      "moved": 907,
+      "active_topics": 20
+    },
+    {
+      "iteration": 15,
+      "moved": 884,
+      "active_topics": 20
+    },
+    {
+      "iteration": 16,
+      "moved": 887,
+      "active_topics": 20
+    },
+    {
+      "iteration": 17,
+      "moved": 870,
+      "active_topics": 20
+    },
+    {
+      "iteration": 18,
+      "moved": 885,
+      "active_topics": 20
+    },
+    {
+      "iteration": 19,
+      "moved": 884,
+      "active_topics": 20
+    },
+    {
+      "iteration": 20,
+      "moved": 904,
+      "active_topics": 20
+    },
+    {
+      "iteration": 21,
+      "moved": 902,
+      "active_topics": 20
+    },
+    {
+      "iteration": 22,
+      "moved": 898,
+      "active_topics": 20
+    },
+    {
+      "iteration": 23,
+      "moved": 891,
+      "active_topics": 20
+    },
+    {
+      "iteration": 24,
+      "moved": 875,
+      "active_topics": 20
+    },
+    {
+      "iteration": 25,
+      "moved": 846,
+      "active_topics": 20
+    },
+    {
+      "iteration": 26,
+      "moved": 889,
+      "active_topics": 20
+    },
+    {
+      "iteration": 27,
+      "moved": 865,
+      "active_topics": 20
+    },
+    {
+      "iteration": 28,
+      "moved": 835,
+      "active_topics": 20
+    },
+    {
+      "iteration": 29,
+      "moved": 777,
+      "active_topics": 20
+    },
+    {
+      "iteration": 30,
+      "moved": 801,
+      "active_topics": 20
+    }
+  ]
+}
