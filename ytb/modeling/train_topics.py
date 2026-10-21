@@ -88,8 +88,14 @@ def train(source: Path, output: Path, *, seed=42, k=20, alpha=0.1, beta=0.1,
             unique.append(i)
     indices = unique
     funnel["unique_text"] = len(indices)
+    language_method = "disabled"
     if vi_filter:
-        indices = [i for i in indices if any(c in VI_CHARS for c in str(rows[i]["text_raw"] or "").lower())]
+        if "comment_language_status" in table.column_names:
+            indices = [i for i in indices if rows[i]["comment_language_status"] == "vi"]
+            language_method = "prepared_language_status"
+        else:
+            indices = [i for i in indices if any(c in VI_CHARS for c in str(rows[i]["text_raw"] or "").lower())]
+            language_method = "legacy_accent_heuristic"
     funnel["after_vi_heuristic"] = len(indices)
     if cap_per_video:
         groups = defaultdict(list)
@@ -151,7 +157,9 @@ def train(source: Path, output: Path, *, seed=42, k=20, alpha=0.1, beta=0.1,
     counts_by_video = Counter(rows[i]["video_id"] for i in kept_indices)
     largest = sorted(counts_by_video.values(), reverse=True)
     summary = {"source": str(source.resolve()), "seed": seed, "k": k, "alpha": alpha, "beta": beta,
-               "iterations": iterations, "min_word_freq": min_word_freq, "vi_heuristic": vi_filter,
+               "iterations": iterations, "min_word_freq": min_word_freq,
+               "vi_heuristic": language_method == "legacy_accent_heuristic",
+               "language_filter_method": language_method,
                "cap_per_video": cap_per_video, "funnel": funnel, "vocabulary_size": v_count,
                "active_topics": int((m > 0).sum()), "videos": len(counts_by_video),
                "top_video_fraction": largest[0] / d_count, "top_10_video_fraction": sum(largest[:10]) / d_count,
@@ -199,7 +207,7 @@ def main():
     parser.add_argument("--iterations", type=int, default=30)
     parser.add_argument("--min-word-freq", type=int, default=2)
     parser.add_argument("--cap-per-video", type=int)
-    parser.add_argument("--no-vi-filter", action="store_true", help="Tắt heuristic ký tự tiếng Việt của script gốc")
+    parser.add_argument("--no-vi-filter", action="store_true", help="Tắt lọc ngôn ngữ (cột prepare hoặc heuristic của đầu vào cũ)")
     args = parser.parse_args()
     target = args.output_dir or config.DATA_DIR / "business" / "topics" / f"seed_{args.seed}"
     try:

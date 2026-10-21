@@ -1,0 +1,47 @@
+{
+  "status": "passed",
+  "input_rows": 73247,
+  "core_columns": [
+    "comment_id",
+    "video_id",
+    "thread_id",
+    "parent_id",
+    "is_reply",
+    "author_channel_id",
+    "text_raw",
+    "text_clean",
+    "tokens",
+    "n_tokens",
+    "like_count",
+    "total_reply_count",
+    "source",
+    "published_at",
+    "updated_at",
+    "published_date",
+    "is_modelable",
+    "processed_at"
+  ],
+  "groups": {
+    "real": {
+      "topics": 596,
+      "sentiment": 1416,
+      "training": 594,
+      "training_videos": 146
+    },
+    "synthetic": {
+      "topics": 12299,
+      "sentiment": 22195,
+      "training": 12299,
+      "training_videos": 500
+    }
+  },
+  "exact_core_schema_preserved": true,
+  "all_retained_values_unchanged": true,
+  "input_sha256_unchanged": true,
+  "no_origin_leakage": true,
+  "all_topic_rows_have_confident_vi_audit": true,
+  "main_models": "K20 / seed42 / 30 iterations / alpha=beta=0.1 / minimum word frequency=2",
+  "unit_tests": "52 passed; 1 standalone detector test deselected; actual pipeline used offline Lingua on both corpora",
+  "distinction": "Model does not repeat the legacy accent heuristic; language filtering occurs upstream",
+  "limitation": "Metadata selection and automatic language detection are not independent human validation."
+}

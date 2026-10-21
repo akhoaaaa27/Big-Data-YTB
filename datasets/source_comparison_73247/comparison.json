@@ -1,0 +1,1952 @@
+{
+  "input": "/workspace/Big-Data-YTB/data/mixed_comments_73247_v2/comments.parquet",
+  "input_rows": 73247,
+  "input_sha256_before": "13262dad632431c6c2947856095f115e7db466240a9271e45ce355e101721dd4",
+  "core_columns": [
+    "comment_id",
+    "video_id",
+    "thread_id",
+    "parent_id",
+    "is_reply",
+    "author_channel_id",
+    "text_raw",
+    "text_clean",
+    "tokens",
+    "n_tokens",
+    "like_count",
+    "total_reply_count",
+    "source",
+    "published_at",
+    "updated_at",
+    "published_date",
+    "is_modelable",
+    "processed_at"
+  ],
+  "language_confidence": 0.8,
+  "language_margin": 0.15,
+  "cap_per_video": 50,
+  "origins": {
+    "real": {
+      "method": "metadata_and_language_trial_v1",
+      "source": "/workspace/Big-Data-YTB/data/mixed_comments_73247_v2/comments.parquet",
+      "output": "/workspace/Big-Data-YTB/data/source_comparison/real",
+      "generated_at": "2026-10-21T19:43:08.159619+00:00",
+      "production_location_verified": false,
+      "audio_verified": false,
+      "language_detector": "lingua-language-detector==2.1.1/all_spoken_languages",
+      "confidence_threshold": 0.8,
+      "margin_threshold": 0.15,
+      "topic_cap_per_video": 50,
+      "sampling": "sha256(0:comment_id)",
+      "input_videos": 1351,
+      "input_comments": 48809,
+      "video_decisions": {
+        "include": 212,
+        "uncertain": 1119,
+        "exclude": 20
+      },
+      "video_accepted_comments": 1814,
+      "sentiment_comments": 1416,
+      "topic_comments": 596,
+      "sentiment_reasons": {
+        "video_not_accepted": 46995,
+        "keep": 1416,
+        "language_uncertain": 389,
+        "language_other": 7,
+        "empty_text": 2
+      },
+      "topic_reasons": {
+        "video_not_accepted": 46995,
+        "not_modelable": 49,
+        "language_short": 589,
+        "keep": 596,
+        "reply": 177,
+        "language_uncertain": 389,
+        "duplicate_text": 5,
+        "language_other": 7,
+        "empty_text": 2
+      },
+      "language_statuses": {
+        "not_checked": 46995,
+        "vi": 827,
+        "short": 591,
+        "uncertain": 389,
+        "other": 7
+      },
+      "before_topic_cap": {
+        "comments": 596,
+        "videos": 146,
+        "top_video_fraction": 0.040268456375838924,
+        "top_10_video_fraction": 0.28859060402684567
+      },
+      "after_topic_cap": {
+        "comments": 596,
+        "videos": 146,
+        "top_video_fraction": 0.040268456375838924,
+        "top_10_video_fraction": 0.28859060402684567
+      },
+      "metadata_source": "/workspace/Big-Data-YTB/data/core/videos",
+      "origin": "real",
+      "metadata_is_synthetic_fixture": false,
+      "missing_video_metadata": 0,
+      "staged_input_sha256_before": "d0290279af29376cb315ef8dbe4e0b29cfd1e4b6b867a12c3dbb569bbb7823cd",
+      "staged_input_sha256_after": "d0290279af29376cb315ef8dbe4e0b29cfd1e4b6b867a12c3dbb569bbb7823cd"
+    },
+    "synthetic": {
+      "method": "metadata_and_language_trial_v1",
+      "source": "/workspace/Big-Data-YTB/data/mixed_comments_73247_v2/comments.parquet",
+      "output": "/workspace/Big-Data-YTB/data/source_comparison/synthetic",
+      "generated_at": "2026-10-21T19:43:43.978344+00:00",
+      "production_location_verified": false,
+      "audio_verified": false,
+      "language_detector": "lingua-language-detector==2.1.1/all_spoken_languages",
+      "confidence_threshold": 0.8,
+      "margin_threshold": 0.15,
+      "topic_cap_per_video": 50,
+      "sampling": "sha256(0:comment_id)",
+      "input_videos": 500,
+      "input_comments": 24438,
+      "video_decisions": {
+        "include": 500
+      },
+      "video_accepted_comments": 24438,
+      "sentiment_comments": 22195,
+      "topic_comments": 12299,
+      "sentiment_reasons": {
+        "keep": 22195,
+        "language_uncertain": 2243
+      },
+      "topic_reasons": {
+        "language_short": 3400,
+        "keep": 12299,
+        "duplicate_text": 1964,
+        "language_uncertain": 2243,
+        "reply": 3564,
+        "not_modelable": 968
+      },
+      "language_statuses": {
+        "short": 3400,
+        "vi": 18795,
+        "uncertain": 2243
+      },
+      "before_topic_cap": {
+        "comments": 12299,
+        "videos": 500,
+        "top_video_fraction": 0.0034962192048133994,
+        "top_10_video_fraction": 0.03065289860964306
+      },
+      "after_topic_cap": {
+        "comments": 12299,
+        "videos": 500,
+        "top_video_fraction": 0.0034962192048133994,
+        "top_10_video_fraction": 0.03065289860964306
+      },
+      "metadata_source": "/workspace/Big-Data-YTB/data/synthetic_comments_50000/videos",
+      "origin": "synthetic",
+      "metadata_is_synthetic_fixture": true,
+      "missing_video_metadata": 0,
+      "staged_input_sha256_before": "1f0137cf543af17f6cf57b5e055072384c1dd2a6acbdf278e7ef3335b8236e1f",
+      "staged_input_sha256_after": "1f0137cf543af17f6cf57b5e055072384c1dd2a6acbdf278e7ef3335b8236e1f"
+    }
+  },
+  "models": {
+    "real": {
+      "source": "/workspace/Big-Data-YTB/data/source_comparison/real/topics/comments",
+      "seed": 42,
+      "k": 20,
+      "alpha": 0.1,
+      "beta": 0.1,
+      "iterations": 30,
+      "min_word_freq": 2,
+      "vi_heuristic": false,
+      "language_filter_method": "disabled",
+      "cap_per_video": null,
+      "funnel": {
+        "input": 596,
+        "modelable": 596,
+        "without_replies": 596,
+        "unique_text": 596,
+        "after_vi_heuristic": 596,
+        "after_video_cap": 596,
+        "training": 594
+      },
+      "vocabulary_size": 1310,
+      "active_topics": 20,
+      "videos": 146,
+      "top_video_fraction": 0.04040404040404041,
+      "top_10_video_fraction": 0.28619528619528617,
+      "history": [
+        {
+          "iteration": 1,
+          "moved": 516,
+          "active_topics": 20
+        },
+        {
+          "iteration": 2,
+          "moved": 285,
+          "active_topics": 20
+        },
+        {
+          "iteration": 3,
+          "moved": 192,
+          "active_topics": 20
+        },
+        {
+          "iteration": 4,
+          "moved": 171,
+          "active_topics": 20
+        },
+        {
+          "iteration": 5,
+          "moved": 135,
+          "active_topics": 20
+        },
+        {
+          "iteration": 6,
+          "moved": 123,
+          "active_topics": 20
+        },
+        {
+          "iteration": 7,
+          "moved": 140,
+          "active_topics": 20
+        },
+        {
+          "iteration": 8,
+          "moved": 132,
+          "active_topics": 20
+        },
+        {
+          "iteration": 9,
+          "moved": 113,
+          "active_topics": 20
+        },
+        {
+          "iteration": 10,
+          "moved": 115,
+          "active_topics": 20
+        },
+        {
+          "iteration": 11,
+          "moved": 115,
+          "active_topics": 20
+        },
+        {
+          "iteration": 12,
+          "moved": 121,
+          "active_topics": 20
+        },
+        {
+          "iteration": 13,
+          "moved": 105,
+          "active_topics": 20
+        },
+        {
+          "iteration": 14,
+          "moved": 113,
+          "active_topics": 20
+        },
+        {
+          "iteration": 15,
+          "moved": 86,
+          "active_topics": 20
+        },
+        {
+          "iteration": 16,
+          "moved": 88,
+          "active_topics": 20
+        },
+        {
+          "iteration": 17,
+          "moved": 102,
+          "active_topics": 20
+        },
+        {
+          "iteration": 18,
+          "moved": 106,
+          "active_topics": 20
+        },
+        {
+          "iteration": 19,
+          "moved": 117,
+          "active_topics": 20
+        },
+        {
+          "iteration": 20,
+          "moved": 110,
+          "active_topics": 20
+        },
+        {
+          "iteration": 21,
+          "moved": 100,
+          "active_topics": 20
+        },
+        {
+          "iteration": 22,
+          "moved": 96,
+          "active_topics": 20
+        },
+        {
+          "iteration": 23,
+          "moved": 103,
+          "active_topics": 20
+        },
+        {
+          "iteration": 24,
+          "moved": 90,
+          "active_topics": 20
+        },
+        {
+          "iteration": 25,
+          "moved": 89,
+          "active_topics": 20
+        },
+        {
+          "iteration": 26,
+          "moved": 110,
+          "active_topics": 20
+        },
+        {
+          "iteration": 27,
+          "moved": 107,
+          "active_topics": 20
+        },
+        {
+          "iteration": 28,
+          "moved": 126,
+          "active_topics": 20
+        },
+        {
+          "iteration": 29,
+          "moved": 106,
+          "active_topics": 20
+        },
+        {
+          "iteration": 30,
+          "moved": 99,
+          "active_topics": 20
+        }
+      ],
+      "status": "completed",
+      "upstream_language_filter": "Lingua VI confidence/margin",
+      "topic_examples": [
+        {
+          "cluster": 10,
+          "comments": 177,
+          "top_words": "video hay gieo tây chủ chúc tao karaoke vui_vẻ kênh thương_nhớ tuần tối hát chất_lượng",
+          "random_examples": [
+            {
+              "comment_id": "UgxbER1k_BpG3Jqz5mV4AaABAg",
+              "video_id": "fwbhi50HCVQ",
+              "text_raw": "Hay tuyệt vời quá mình mượn nhạc được không bạn ơi"
+            },
+            {
+              "comment_id": "UgwV4YwkuzbD2hZDXhx4AaABAg",
+              "video_id": "WPT85EzEvCg",
+              "text_raw": "bài hát hay và rất tuyệt vời🎉"
+            },
+            {
+              "comment_id": "UgyuVc5ul131tWY_X_V4AaABAg",
+              "video_id": "Dp7oAQT1xm0",
+              "text_raw": "Hồi xưa nghe Lý Hải hát nè. Giọng khàn hay ghê❤"
+            },
+            {
+              "comment_id": "UgyZnwOjY2c6u45G4yN4AaABAg",
+              "video_id": "Y2PLov70yg4",
+              "text_raw": "Bài này hay quá! Mình chưa nghe bao giờ...❤ cảm ơn chủ kênh Ryan!"
+            },
+            {
+              "comment_id": "Ugy2J_fhnEarg10FuAp4AaABAg",
+              "video_id": "1P7dPyVVUVw",
+              "text_raw": "Tiền nhiều để làm gì à?ai giao dịch với tao 5 tỷ vnđ,kêu tao ăn cức của họ tao cũng ăn"
+            }
+          ]
+        },
+        {
+          "cluster": 2,
+          "comments": 93,
+          "top_words": "giọng xuất_sắc ryan thành_công trăng quê_hương mạnh phong_cách rộn_ràng thôn vui_tươi lâu ck ca nữ",
+          "random_examples": [
+            {
+              "comment_id": "UgyPWWbu90x6YV16R3Z4AaABAg",
+              "video_id": "64eY_Z9A-4Q",
+              "text_raw": "Bản phối tuyệt vời ...cám ơn Ryan .❤❤"
+            },
+            {
+              "comment_id": "UgyxwQh-spL4trLkSUh4AaABAg",
+              "video_id": "IxaOMmzamJ4",
+              "text_raw": "Âm nhạc sôi động, đong đầy nỗi nhớ sông nước! 🚣‍♂💖"
+            },
+            {
+              "comment_id": "Ugz2Speccpm9w1PvcYF4AaABAg",
+              "video_id": "Lc_0PVVZSYM",
+              "text_raw": "Hay và buồn quá , cám ơn Ryan nhiều nhé . Chúc con luôn vui và luôn thành công ❤❤❤❤❤"
+            },
+            {
+              "comment_id": "UgztGvjtA0kZyFKZsbx4AaABAg",
+              "video_id": "l2xaWMboN0w",
+              "text_raw": "🍃🍂 Cảm ơn Ryan đã dùng tiếng hát thật truyền cảm, để kể lại câu chuyện tình ngắn ngủi, trải qua 4 mùa đầy kỷ niệm yêu thương, nhưng để lại thật nhiều hoài niệm đau thương 🥲"
+            },
+            {
+              "comment_id": "UgwX1vQUTCh4L9pBsvp4AaABAg",
+              "video_id": "cT_WZ5E_8PY",
+              "text_raw": "Thật đúng là giọng ca tuy AI phối mới nhưng rất hay, truyền cảm, không gào, không rướn cao."
+            }
+          ]
+        },
+        {
+          "cluster": 1,
+          "comments": 80,
+          "top_words": "bố vietmusic mưa hạt nhờ nand muốn thực_hiện tí_tách wow thuở bài mất xa_xưa tưởng",
+          "random_examples": [
+            {
+              "comment_id": "Ugw7pPjxId3gT1jXkTp4AaABAg",
+              "video_id": "fyzu_MvTZvg",
+              "text_raw": "Sao mà nó hay thật đấy"
+            },
+            {
+              "comment_id": "UgxpeLb_tgIDihVKC0N4AaABAg",
+              "video_id": "Hz8stxGt2pY",
+              "text_raw": "Tào lau quả cáo nhiều hơn ca thôi quản cáo đi"
+            },
+            {
+              "comment_id": "Ugwq1SnW_hG4R1sfNG54AaABAg",
+              "video_id": "hzFBUyKBLjw",
+              "text_raw": "😢nhớ Bố tôi khi nghe bài này ..lúc nhỏ Bố thường hát cho 3 ce nghe"
+            },
+            {
+              "comment_id": "UgysvIRMLSBSNjmx4gB4AaABAg",
+              "video_id": "ij3EeYcm7kY",
+              "text_raw": "Bao nhiêu ngày tháng mới nghe lại bài hát này ....một kỷ niệm của thuở xa xưa lại về ....nghe vẫn buồn vẫn xót thương những người ấy ...thanks Ryan ."
+            },
+            {
+              "comment_id": "UgyFyfmlDtWuP-eZSv94AaABAg",
+              "video_id": "Po-CwVMmZgw",
+              "text_raw": "Rất hay và cảm động bài sau Em Ra bài lụ khó êm nhé"
+            }
+          ]
+        },
+        {
+          "cluster": 14,
+          "comments": 45,
+          "top_words": "thoáng bay lá thu sa xa vàng kết nghìn áo lính qua_đời mùa ngừơi trường",
+          "random_examples": [
+            {
+              "comment_id": "UgyzaPC0Iv2UfyiFS394AaABAg",
+              "video_id": "2diLIIFYgp0",
+              "text_raw": "Máy tính hát k phải ng hát hả bạn"
+            },
+            {
+              "comment_id": "Ugw20LQrhyxX1HcIBS54AaABAg",
+              "video_id": "_f3MXfsz2Ws",
+              "text_raw": "Những ca điệu này phải hát bằng giọng Nam  bộ mới lột hết được tình cảm và sẽ tuyệt vời ít ra là gấp đôi ba lần bạn ạ ! …. \nBạn nên làm lại phiên bản hát bằng giọng nam bộ đi …. Nghe tiếng Bắc trong các giai điệu này hoàn toàn không hợp đâu bạn !!!"
+            },
+            {
+              "comment_id": "UgyW0zaMxdy4xC0jm3x4AaABAg",
+              "video_id": "YSeeTFkSWxo",
+              "text_raw": "❤❤❤❤❤❤❤❤❤🎉🎉🎉🎉🎉\nLời nhạc thật lãng mạn quá....\" Lòng ta lơ đãng... mà xuân vẫn sang ...\" Cảm ơn Ryan."
+            },
+            {
+              "comment_id": "UgzLHtiuzmidJuVY1Ul4AaABAg",
+              "video_id": "Y2PLov70yg4",
+              "text_raw": "Một nỗi buồn cũng \"lãng mạn\" như mùa Thu . Nhè nhẹ mà len vào !"
+            },
+            {
+              "comment_id": "UgyjjAhHKTqni0sJVLd4AaABAg",
+              "video_id": "Lbo3jOA3nzI",
+              "text_raw": "Làm tui nhớ đến lam thiên"
+            }
+          ]
+        },
+        {
+          "cluster": 9,
+          "comments": 32,
+          "top_words": "jenny ngày_mai đả music dẫu lấp tim trái_tim khác say ôm gọi khiến chẳng_thể hiểu",
+          "random_examples": [
+            {
+              "comment_id": "UgxxrIeYQIGVhch2sbx4AaABAg",
+              "video_id": "xqA2Q49ghAA",
+              "text_raw": "Cố quên lại càng nhớ \nNên dặn lòng cố nhớ để mà quên"
+            },
+            {
+              "comment_id": "UgxBukrQByyKCVkJJq54AaABAg",
+              "video_id": "HIUbVG1hFw4",
+              "text_raw": "Nghẹn ngào thương nhớ em ...nước mắt rơi theo nỗi nhớ thương về chốn xưa ,người cũ cách xa ngàn trùng."
+            },
+            {
+              "comment_id": "Ugxw3u0Y1Mz4JuzSgqh4AaABAg",
+              "video_id": "UrcnVheSjF0",
+              "text_raw": "Con gái hát ca khúc này phối hợp âm nhạc nút trầm  rất đỉnh đưa tông lên vừa phải luyến láy quyện vào nhau  rất sâu đọng trong lòng người nghe nhạc mong con gái cô gắng hơn nữa để tiếp bước huyền thoại  đã  bên kia  sườn dốc để hoàn thiện nghe con"
+            },
+            {
+              "comment_id": "Ugy2CviSs0ad1Jfyd2h4AaABAg",
+              "video_id": "uW6Bqbm8ExE",
+              "text_raw": "Tưởng đâu làm lại thì hay hơn các bản cũ . Té ra cùng bình thường. KHÔNG CÓ GÌ đáng chú ý !"
+            },
+            {
+              "comment_id": "UgymqynmtyhUupgKiZd4AaABAg",
+              "video_id": "jtcsK4G316s",
+              "text_raw": "\" Trùng dương ơi có xót xa cũng hoài mà thôi \" Biết thế nhưng cái thú dau thương cứ đưa ta về kỷ niệm xưa.Lục tìm trong ký ức bóng hình, nụ cười, cậu nói,chuyện vụn vặt...mà người có thể không nhớ nhưng ta chưa  hề quên : Yêu có nghĩa là không bao giờ nói hối tiếc.   ( \" Love means never having to say you're sorry \".)"
+            }
+          ]
+        },
+        {
+          "cluster": 11,
+          "comments": 31,
+          "top_words": "đăng_ký like bình_luận reverbai tang thế_nào đừng cover ủng_hộ bấm ghé lượt sản_phẩm tiếp_theo kênh",
+          "random_examples": [
+            {
+              "comment_id": "Ugyhr-ag6ZlVLQsq-8V4AaABAg",
+              "video_id": "uu330rYB6lI",
+              "text_raw": "Cùng 1991 AI Cover lắng nghe lại giai điệu đi cùng năm tháng này nhé! Bạn cảm nhận thế nào về phiên bản chuyến tàu hoàng hôn ai cover hôm nay? Hãy để lại ý kiến và nhấn Đăng Ký kênh để ủng hộ tụi mình ra thêm nhiều bản nhạc trữ tình ai cover thật hay nữa nha! 🚂🌅✨"
+            },
+            {
+              "comment_id": "Ugzjnz-f5g8beVyiDed4AaABAg",
+              "video_id": "_mtEpXyPpbo",
+              "text_raw": "❤ Cảm ơn bạn đã ghé nghe và đồng hành cùng kênh. Mỗi lượt nghe, mỗi lượt theo dõi là nguồn động lực rất lớn để mình tiếp tục làm nhạc 🎶\nKênh sẽ mang đến những giai điệu buồn – chậm – vui, chạm đến cảm xúc. Hợp gu thì ở lại lâu lâu nhé 😊"
+            },
+            {
+              "comment_id": "UgzqDx0Y0O7-pFCFjkl4AaABAg",
+              "video_id": "eJsEtVXlo3s",
+              "text_raw": "A ơi hướng dẫn upload và cover bài hát bị Suno Ai báo bản quyền đi a."
+            },
+            {
+              "comment_id": "Ugwr-jDOLR8jqK8f0a14AaABAg",
+              "video_id": "WsXrjTKgKUs",
+              "text_raw": "Cảm ơn mọi người đã ghé thăm và lắng nghe sản phẩm từ 1991 AI Cover! Hãy thả 1 Like và Đăng Ký Kênh để tiếp thêm năng lượng cho bọn mình ra thật nhiều bản cover AI thú vị hơn nữa nhé. Chúc cả nhà xem video vui vẻ và tràn ngập năng lượng tích cực! ❤️🎵"
+            },
+            {
+              "comment_id": "UgxvzwZC2X5i74vfmYJ4AaABAg",
+              "video_id": "k3ykca5ccyE",
+              "text_raw": "Cảm ơn lượt thich bình uẩn của mình nhe❤tang 🌺🌺🌺🌺🌺🌺🌺cho ai đó\n         TBNAD"
+            }
+          ]
+        },
+        {
+          "cluster": 5,
+          "comments": 25,
+          "top_words": "dnpham vòng bé biết_bao bâng_khuâng lãng_đãng lơi mênh_mang khiến đẹp mở_đầu phiêu tại_sao xa_vắng khuya",
+          "random_examples": [
+            {
+              "comment_id": "UgxqWj_Ri6w61X4Ooad4AaABAg",
+              "video_id": "SDVWiWSvtNU",
+              "text_raw": "Chỉ hai từ “Gọi Buồn” thôi cũng đã làm mình nghĩ đến một viễn cảnh ưu buồn, xót xa…\nBài hát mang âm hưởng du dương trữ tình và trầm buồn. Mở đầu với hình ảnh kẻ ở người đi với biết bao tâm sự âu lo trước lúc chia ly và những câu hỏi day dứt về việc ai sẽ đưa đón em trong phố khuya đường vắng, ai sẽ ru em vào cơn mơ khi thu tới hay chắn gió  khi đông sang. Và cho mình càng cảm xúc với câu:\n“Tình đầu dù biết thương đau chẳng mấy ai không sầu”\nTình yêu đầu đời ấy rất đẹp nhưng cũng rất mong manh, nên đã khiến cho nhân vật trong bài hát say đắm không phải vì men rượu mà vì hoài niệm về người yêu cũ.\nVà mình chạnh lòng hơn khi nghe câu hát : “Chạnh lòng tôi biết tôi say nên gọi buồn chiều nay” Bởi vì nó gợi lên một hình ảnh cô độc nên “GỌI BUỒN “ về để bầu bạn trong một buổi chiều hiu quạnh.\nBài hát cho mình nhiều cảm xúc từ đầu đến cuối, đặc biệt câu “Em có nhớ tới tôi xin em đừng nhắc câu biệt ly” Như một lời dặn dò đầy trắc ẩn của người ra đi, đừng nhắc đến hai từ “biệt ly” để càng thêm đau xót..\nCảm ơn Dnpham đã “phục vụ” và mang đến cho khán giả một khung trời đầy “u sầu và hoài niệm” nhưng rất TUYỆT VỜI! 👏👏🎶🎶❤️❤️"
+            },
+            {
+              "comment_id": "UgwRNFeZZ4UiOsCu7fV4AaABAg",
+              "video_id": "VWOLeBVLu7Y",
+              "text_raw": "Tiếng guitar rải từng nốt êm dịu, uyển chuyển, khiến giai điệu trở nên mênh mang, bình yên và chạm sâu vào cảm xúc người nghe.\nCảm ơn Dn nhiều. 🌿"
+            },
+            {
+              "comment_id": "Ugy1sjHXW4lD5TcPGd94AaABAg",
+              "video_id": "SDVWiWSvtNU",
+              "text_raw": "🎼Gọi Buồn 🎼 Lời bài hát rất thơ và đậm nét u hoài, cô đơn đến nao lòng “ Ngày mai ai sẽ đưa em về phố khuya lên đèn..” Câu mở đầu chứa đựng tâm sự u buồn, đầy lưu luyến trước giờ phút chia ly của người yêu.Hay quá DnPham  ơi ! Hình ảnh đẹp rất ấn tượng cho bài hát 👍 Cám ơn bản phối rất hay, trầm buồn mà khg hề bi lụy ..Chúc gia đình DnPham nhiều sức khoẻ và an lành 👏👏👏 ❤"
+            },
+            {
+              "comment_id": "UgySNoQPjfXo7yss2fd4AaABAg",
+              "video_id": "vY-X8ZB3SDs",
+              "text_raw": "Đây cũng là một bản phối rất có khí chất, hợp lí hài hòa. Nhưng phần lời, từ chỗ \"Chàng đi chinh chiến...\" cho tới \"...tình yêu thế hệ\", nghe thật sự tụt mood. Bài này giống như được viết bởi hai người vậy. Đoạn đầu là một người từng trải qua đủ đắng cay ngọt bùi, đến đoạn kia thì như thể được một đứa cấp hai viết nốt."
+            },
+            {
+              "comment_id": "UgyB-qVY8x9-JI12xnp4AaABAg",
+              "video_id": "vY-X8ZB3SDs",
+              "text_raw": "Một bài hát thật đẹp và đượm buồn ! Đẹp biết bao hình ảnh người con gái chẳng cần son phấn mà vẫn vẹn tròn lòng thủy chung, đợi chờ. Những điệu múa uyển chuyển nhẹ nhàng, bay bổng hòa vào từng nốt nhạc xa vắng ,tạo nên không gian âm nhạc tuyệt vời 🌙🕯️🎻"
+            }
+          ]
+        },
+        {
+          "cluster": 19,
+          "comments": 22,
+          "top_words": "pa rât dn de nhũng très lle đủ pham saigon sg sức_khoẻ tập gợi mái",
+          "random_examples": [
+            {
+              "comment_id": "UgzL2ajgr_lZTTDF6hh4AaABAg",
+              "video_id": "4XNgdrZFGNw",
+              "text_raw": "Bài hát có chút buồn , lãng mạn nhưng hay tuyệt vời 💚🍁💚🍁💚\nCám ơn Ryan đã tuyển chọn những bài hát bất hủ với thời gian ❤️❤️❤️"
+            },
+            {
+              "comment_id": "UgxyYrn7zeyXA-T5BGF4AaABAg",
+              "video_id": "2fHwiK0-QlM",
+              "text_raw": "Từng bị chồng ỉn chụ.   Nghe đau lòng"
+            },
+            {
+              "comment_id": "UgzTOrf7Ac7ThInYtVR4AaABAg",
+              "video_id": "Y2PLov70yg4",
+              "text_raw": "Buồn chưa đủ hay sao mà cứ có mùa thu hoài vậy ban. Sức chịu đựng của trái tim có giới hạn đấy nhé. Nó sẽ vỡ tung nếu bị quá tải với đau khổ😅😅😅😅"
+            },
+            {
+              "comment_id": "UgxyhshM2fAT-SPOLt14AaABAg",
+              "video_id": "-d-8DdP9Kc4",
+              "text_raw": "🎼 Pa Pa 🎼  Tình yêu vô bờ bến của người Cha , hy sinh thằm lặng che chở, nuôi dưỡng con nên người..Nhớ Pa Pa❤ Một giai điệu Bebop uyển chuyển tuyệt vời 💃🕺❤💃🕺❤💃🕺❤"
+            },
+            {
+              "comment_id": "UgyPv5ywYpysnPNIwLZ4AaABAg",
+              "video_id": "waIX9WjuEnM",
+              "text_raw": "Gợi nhớ tới những buổi họp bạn tươi vui, đùa nghich chọc ghẹo nhau dưới bóng trăng, tuổi trẻ thật đẹp vô tư lư. ❤"
+            }
+          ]
+        },
+        {
+          "cluster": 16,
+          "comments": 15,
+          "top_words": "co hoi chu du dám tí chào moi fl nghen gặp sorry am kính sk",
+          "random_examples": [
+            {
+              "comment_id": "Ugym71ua93pFrsOfM7d4AaABAg",
+              "video_id": "waIX9WjuEnM",
+              "text_raw": "Sorry em , không phải bây mà là vậy , cảm ơn nhiều ."
+            },
+            {
+              "comment_id": "UgxCfNP3yAncPSXqinB4AaABAg",
+              "video_id": "J34lKPJnsXo",
+              "text_raw": "Tốt đó bạn ơi! Nhưng mua thì làm sao trả tiền ạ ?"
+            },
+            {
+              "comment_id": "UgzefLpxC6kqzMT9E914AaABAg",
+              "video_id": "64eY_Z9A-4Q",
+              "text_raw": "Chào  Ryan nguyen , chúc  sức khỏe  và  buổi  sáng  an lành"
+            },
+            {
+              "comment_id": "UgzU06AXGmjWlrUvacR4AaABAg",
+              "video_id": "64eY_Z9A-4Q",
+              "text_raw": "Chào em , và bạn  , con nếu không phải duyên và người đó không là của mình . Thì co co giữ . Co cột , co nhốt , co lắm bằng du moi cách để giữ thì vẫn không được là không được .Tui không phải là thấy bởi hay co tại tiền tri , hay giác quan thu sáu , với số tuổi này tui đã thấy cũng không ít .Chào em Ryan & và bạn."
+            },
+            {
+              "comment_id": "Ugz9u68GeIGcNjbvujh4AaABAg",
+              "video_id": "0QQp37Ke4WI",
+              "text_raw": "Chào em , chị moi  gọi cách đây  5 phút  fl khoảng 4:50chieu chi nhứt 8/30/26 . Nếu được em vui lòng hoi  am . Cảm ơn em."
+            }
+          ]
+        },
+        {
+          "cluster": 0,
+          "comments": 11,
+          "top_words": "ông trân_trọng ba_má mộ quốc tác_phẩm kẻ mong_manh thân ns bên sông yêu_thương chương_trình cổ",
+          "random_examples": [
+            {
+              "comment_id": "UgzFetf0_h26a2rixMZ4AaABAg",
+              "video_id": "5wr-ED-n6r0",
+              "text_raw": "Cám ơn NS TS\nCác tác phẩm của ông\nKhông có bài nào dở\nTôi trân trọng vàgưỡng mộ ông vô cùng\nCám ơn  CS đã hát lẻn bài tính ca này"
+            },
+            {
+              "comment_id": "UgwaOjz917EYWW4RdsB4AaABAg",
+              "video_id": "ofmbhfWcmQs",
+              "text_raw": "Ns TB có it tác phẩm như các ns duong thời nhưng chi hai Ck TL và TMN đã đưa Ông vào ngôi đền Âm nhạc VN Rất trân trọng những tác phẩm của ông Để lại Mười điểm cho Ck này ❤"
+            },
+            {
+              "comment_id": "UgwQPWCJGEizl8eDFA14AaABAg",
+              "video_id": "Dp7oAQT1xm0",
+              "text_raw": "Thân mình xưa bên người."
+            },
+            {
+              "comment_id": "UgxHPvEcOX6QjqJd2el4AaABAg",
+              "video_id": "uCHwURZVd1o",
+              "text_raw": "Kiếp nhân sinh là cỏi tạm để yêu thương để trân trọng , cuộc đời mong manh và vô thường như ngọn đèn trước gió vụt sáng rồi chợt tắt chẳng biết khi nào. Cuộc đời có được bao lần 10 năm, hãy trân trọng và yêu thương những gì mình đang có."
+            },
+            {
+              "comment_id": "Ugz0O8Mu6aIhupMRqsR4AaABAg",
+              "video_id": "Dp7oAQT1xm0",
+              "text_raw": "Thân xưa bên người."
+            }
+          ]
+        },
+        {
+          "cluster": 12,
+          "comments": 11,
+          "top_words": "xuân chiến_sĩ lúa nương bảo_vệ dản dị đất_nước khanh xanh nền đồng_quê mộng tuấn tươi",
+          "random_examples": [
+            {
+              "comment_id": "Ugwn-DM0yKtzJKID9uN4AaABAg",
+              "video_id": "jSQ7etK-NlA",
+              "text_raw": "🌷Mùa Xuân đang về nơi tôi sống, qua những nụ hoa e ấp  và cây cỏ đang đâm chồi nẩy lộc. Mùa Xuân về nơi xứ người thật thanh bình, trong sáng và ấm áp.\nTôi lại nhớ đến những mùa Xuân năm xưa nơi quê nhà, tuy chiến tranh dai dẳng, nhưng vẫn không thiếu vắng không khí đậm đà của Xuân về, Tết đến ở thành phố và nơi đồng quê được yên ổn trong sự bảo vệ che chắn của các Anh, những Người Chiến Sĩ Cộng Hòa vì Dân, vì Nước 🕊💐\n \n\" Người Chiến Sĩ mắt sáng ngời\nNghe tin Xuân đang về ngàn nơi...\nAnh có mơ mộng ước gì không?!\"\n( Mộng Đêm Xuân/ Nhạc sĩ Tuấn Khanh)"
+            },
+            {
+              "comment_id": "Ugz_gVtdE6MgDXvC7214AaABAg",
+              "video_id": "jSQ7etK-NlA",
+              "text_raw": "Mộng đêm xuân , đêm xuân nhiều mộng đẹp ...\nCám ơn Ryan nhiều nhé , chúc muôn người có cuộc sống đẹp như đêm xuân ❤❤❤❤❤"
+            },
+            {
+              "comment_id": "UgzhGNCS2NASwYiTvGZ4AaABAg",
+              "video_id": "ZQb_bhhZJNk",
+              "text_raw": "Sao vậy?hãy chúc người ấy hạnh phúc nhé.😂🎉❤"
+            },
+            {
+              "comment_id": "UgyJlLKjsgj1veixf1x4AaABAg",
+              "video_id": "ktKKq6u5woc",
+              "text_raw": "Bạn đã dùng hình nền không có đúng nên đổi lại"
+            },
+            {
+              "comment_id": "UgxHb51Fydi8YWjUU9t4AaABAg",
+              "video_id": "iRvPyJRk5Wo",
+              "text_raw": "Ryan…Nương  Chiều sáng tác của ns Phạm Duy … rất xưa và rất hay ❤Ca  khúc cho chúng ta hình ảnh cảnh đồng quê ruộng lúa ngoài Bắc, khi nghe thấy êm đềm nhẹ nhàng dịu dàng của giai điệu ❤ca từ giản dị đậm chất chân quê: nương khoai , trâu bò, dục mõ,quẩy lúa  , áo chấm,❤ nhưng nương rẫy đó đánh đổi một giá rất đắc ❤:lấy máu tô cho thắm núi xanh- đem mồ hôi tươí đồng lúa xanh ❤Ý nghĩa vô cùng, sự chiến đấu để bảo vệ đất nước ❤tiếng hát nam thật đáng yêu nghe sao thấy ngọt ngào nhẹ nhàng, nhất đoạn giữa  đổi điệu nghe hay lạ ❤ban nhạc Ryan lúc nào cũng tuyệt vời nhất ❤Ck xưa mà nghe thật mới mẻ và lôi cuốn, cảm ơn Ryan rất giỏi sưu tầm nhạc xưa, đó là nét độc đáo của Ryan ❤🎉❤"
+            }
+          ]
+        },
+        {
+          "cluster": 17,
+          "comments": 10,
+          "top_words": "lệ gối chồng thay fh gót ngón tiễn ôi một_mình nge tuôn xác đơn rơi",
+          "random_examples": [
+            {
+              "comment_id": "Ugx-w3M46ssk0I5QxRt4AaABAg",
+              "video_id": "1P7dPyVVUVw",
+              "text_raw": "Thấy cô dâu rơi lệ tội nghiệp quá"
+            },
+            {
+              "comment_id": "Ugw6k__5MzvOedRPveh4AaABAg",
+              "video_id": "77OkBy1BdvY",
+              "text_raw": "Tôi nge mà tôi nghĩ chuyện quá khứ của tôi . Cảm thấy rất tiệt càng nge càng thấu cảm ổn bạn"
+            },
+            {
+              "comment_id": "UgzcxFs16EryNiGjUu94AaABAg",
+              "video_id": "JQVlSFyGKEU",
+              "text_raw": "Người biệt phương trời.\nVui cùng người mới.\nBỏ tôi chơi vơi.\nChua xót ngập đời.\n\nKỷ niệm một thời.\nYêu đương vun xới.\nNGƯỜI ĐÃ ĐI RỒI.\nGIỌT SẦU TÔI RƠI.\n\nAnh cảm ơn làn hơi ngọt ngào êm ái của em xinh.\nLike, views ..\n❤❤🎉🎉"
+            },
+            {
+              "comment_id": "Ugw-8Mk2ofYRCa0umRF4AaABAg",
+              "video_id": "Dp7oAQT1xm0",
+              "text_raw": "Nhìn em áo hoa bên người.Áo hoa ai thay lệ ai.Một mình thôi đời ai đi lặng lẽ đi ai lệ anh em.Mộng uyên đôi ta thôi đành quên ôi.Lệ ơi xa tôi.Áo hoa lệ thôi rơi người đi buồn lệ ơi.Ngồi nơi đây nhớ thương một người.Người ra đi nơi nào đôi ta sẽ biết đi về đâu ôi xã xôi ôi i i i i a a a a ơi ôi!."
+            },
+            {
+              "comment_id": "UgzmQx8dLcAoGA_wvo14AaABAg",
+              "video_id": "Dp7oAQT1xm0",
+              "text_raw": "Ôi thôi một mình đời chờ em người ơi lệ tình tuôn rơi lệ hoa phai lệ ai tan ôi người ơi."
+            }
+          ]
+        },
+        {
+          "cluster": 6,
+          "comments": 8,
+          "top_words": "tím nàng_thơ màu chy ntat pensée thiếu_nữ trọng tvyhmt hoàng thiếu hải thư cánh vân",
+          "random_examples": [
+            {
+              "comment_id": "Ugy3sVddoo7JpFxw-kh4AaABAg",
+              "video_id": "mQgZt_VeeNw",
+              "text_raw": "đón nghe các bài cùng tác giả:\n- Lá thư màu xanh của Tuấn Hải - Huy Thanh\n- Người yêu không đến << Tâm tình Nối tiếp Tìm một người yêu >> của Tuấn Hải"
+            },
+            {
+              "comment_id": "Ugwa8d5XkZWnIqh5pP94AaABAg",
+              "video_id": "hdUdX-VPh2k",
+              "text_raw": "Tim💜tím là màu em trót yêu\n💜💜💜💜💜💜💜"
+            },
+            {
+              "comment_id": "Ugy3J0KDCE_1F0g3wSl4AaABAg",
+              "video_id": "m6JN52_2Vgo",
+              "text_raw": "Bài này phân âm thanh hơi bị loãng nên thiếu truyền cảm"
+            },
+            {
+              "comment_id": "Ugz_yV1EDHkJhUpB5HR4AaABAg",
+              "video_id": "hdUdX-VPh2k",
+              "text_raw": "Mới được nghe lần đầu bài này, dịu dàng buồn man mác. Màu tím thì hợp với mùa thu quá rồi. \nTôi nhớ ngày trước trong tủ áo dài VN của các nàng không thể thiếu màu tím đủ tông, từ nhạt đến xâ.m, nhất là tím Huế,tuyệt vơ`i!\n❤"
+            },
+            {
+              "comment_id": "UgwuhiXXF6e0SrmBqGd4AaABAg",
+              "video_id": "tEvszcPnsKA",
+              "text_raw": "Các bạn có để ý hễ ca khúc nào của Nhạc sĩ Hoàng Trọng được Nàng Thơ Vĩnh Phúc để mắt tới hay chạm tay vào nó thì y như rằng nhạc phẩm ấy \"cháy hàng\" và trở thành một top hit instantly... vài thí dụ Ngàn Thu Áo Tím (NTAT), Cánh Hoa Yêu (CHY), Nhặt Lá Vàng, Tôi Vẫn Yêu Hoa Màu Tím (TVYHMT), vân vân và mây mây... và dĩ nhiên kể cả bài hát Người Đi Chưa Về tuyệt vời bà mặt giời mà Hội trưởng đang cho chúng ta thưởng thức sau kỳ nghỉ̉ ngắn như con rắn vừa qua... Mà thơ của Nàng Thơ thì ít nhiều không thể thiếu màu Tím... trong NTAT và TVYHMT có thể đếm được cả chục chữ Tím, trong CHY cũng thế, không Tím thì Pensée, chứng tỏ Nàng Thơ rất yêu màu Tím... Ngày xưa các cậu thiếu niên mới lớn yêu thầm các thiếu nữ cùng trường thường mua rồi ép cánh pensée vào trong giấy pelure, bỏ nó vào phong thư rồi len lén nhét nó vào cặp của các thiếu nữ họ Hoàng Thị tên Ngọ lúc tan trường về...\r\n\r\nCa khúc của Nhạc sĩ Hoàng Trọng/Nàng Thơ Vĩnh Phúc mà tôi yêu thích nhất là bài Tìm Một Ánh Sao... giai điệu tha thướt dịu dàng, lời thơ cực kỳ lãng mạn trữ tình... các bạn có thể tìm nghe Ca sĩ Mai Hương trình bày nhạc phẩm này với phần hòa âm phối khí của Nhạc trưởng Lê Văn Khoa.... nhưng có lẽ nhạc phẩm này đã được thu Live nên phần âm thanh và hình ảnh không được rõ nét làm mất đi giá trị của một tuyệt phẩm... \r\n\r\nThử tưởng tượng.........................................................................................."
+            }
+          ]
+        },
+        {
+          "cluster": 15,
+          "comments": 8,
+          "top_words": "cuối_cùng sự chiếc khoảnh_khắc hoang_phế nồng_nàn phố vắng lá tình_yêu bóng_tối giăng hiện_thực hương_hoa lưng",
+          "random_examples": [
+            {
+              "comment_id": "Ugw5_G2zsJdNSTs4RUN4AaABAg",
+              "video_id": "Y2PLov70yg4",
+              "text_raw": "Tôi đã đánh mất mùa thu ấy,\r\nTừ ngày em đi, mọi thứ chẳng còn như xưa.\r\nLá vẫn rơi, gió vẫn còn ở lại,\r\nChỉ trái tim tôi đã vắng bóng nắng vàng.\r\n\r\nCon đường cũ vẫn còn nguyên nơi đó,\r\nChỉ chẳng còn ai bước cạnh bên.\r\nTôi cứ lặng lẽ đi trong im tiếng,\r\nMà chẳng biết từ nay sẽ về đâu.\r\n\r\nTôi gọi tên em giữa dòng người đông đúc,\r\nNhưng tiếng gọi tan theo gió giữa trời.\r\nNhư chiếc lá cuối cùng của mùa thu năm ấy,\r\nKhông ai nghe thấy, cũng chẳng ai nhặt lên.\r\n\r\nMùa thu vẫn trở lại, năm này qua năm khác,\r\nChỉ chúng ta chẳng thể trở về.\r\nTôi giữ một chiếc lá trong lòng bàn tay,\r\nNhư giữ lại chút cuối cùng của em."
+            },
+            {
+              "comment_id": "UgyNj1NtTsbZxK4xQbZ4AaABAg",
+              "video_id": "8EY94strKBs",
+              "text_raw": "“Phố Buồn” của nhạc sĩ Phạm Duy là một bức tranh đầy ám ảnh về những lối nhỏ trong mưa, những mái nhà im lìm và những phận người sống lặng lẽ giữa phố cũ.\n\nQua từng câu hát, con phố hiện lên vắng lạnh nhưng không hoàn toàn tuyệt vọng. Sau màn mưa và bóng tối vẫn thấp thoáng hơi ấm của tình người, của một niềm mong chờ và ước ao về ngày mai tươi sáng hơn."
+            },
+            {
+              "comment_id": "UgyenZbPdr_-kz6LgSh4AaABAg",
+              "video_id": "9MfU57uRTZU",
+              "text_raw": "Cuộc tình nào đi qua cũng đề lại khoảng trống mênh mông, nơi ký ức và hiện tại dằn xé lẫn nhau. Khoảnh khắc em quay lưng bước đi là lúc hiện thực nghiệt ngã ập đến, thế giới trong tôi như sụp đổ hoàn toàn, khoảnh khắc đó nhẹ nhàng nhưng sắc như dao cắt, để lại phía sau một khoảng không buốt giá và chênh vênh. Giờ phút này, tôi biết là…tôi mất em thật rồi!\n\nMới đêm qua thôi, tình chúng ta vẫn còn nồng nàn như hương hoa của mùa xuân tươi thắm, rực rỡ, dịu dàng như tia nắng ấm ban mai. Thế mà chỉ sau một đêm, tất cả đều tan tác, nhòe nhoẹt như làn sương giăng lạnh lùng của buổi chiều đông. Trong tim anh, tình yêu ấy vẫn nguyên vẹn thiết tha như một lời gọi mời không đáp trả, nhưng tất cả chỉ còn lại sự ngỡ ngàng, tiếc nuối và xót xa cho vòng tay từng ôm ấp mặn nồng, nay bỗng trở nên hững hờ và lãng quên.\n\nAnh tự hỏi, tại sao đời mình không có nhau? Có phải vì tình yêu đã phai màu từ những chiều tê tái, rã rời và hoang phế, hay vì những rạn nứt âm thầm mà chúng ta đã vô tình lãng quên? Sao hai ta không thể chung một lối, để rồi hiu hắt riêng một ĐỜI KHÔNG CÒN NHAU? Những câu hỏi xé lòng ấy vẫn vang lên trong vô vọng đầy xót xa.\n\nĐời không còn nhau, chỉ còn lại tiếng gào thét lặng lẽ của một người bất lực đứng nhìn kỷ niệm dần trôi xa..\n………..\nCám ơn JDNPham cho tình khúc buồn “Đời Không Còn Nhau” của nhạc sĩ Diệu Hương! 🎶🎶🎶"
+            },
+            {
+              "comment_id": "UgzNs5BidhbPtqsguoZ4AaABAg",
+              "video_id": "VWOLeBVLu7Y",
+              "text_raw": "Có những cuộc tình đi qua đời nhau nhẹ nhàng như làn khói, nhưng để lại vết hằn sâu thẳm như thời gian. Khi tình yêu khép lại bằng sự chia ly, con người ta thường tìm về với kỷ niệm, nơi thời gian và sương gió đã bắt đầu phôi pha, nơi làm mờ đi những lời hẹn ước nhưng lại làm đậm thêm nỗi đau hoài niệm.\n\nCó bao giờ em tự hỏi: “Thời gian có biết không, khi mùa đông đưa nắng qua sông?” Thời gian tựa như một tiếng thở dài tự tình trước quy luật nghiệt ngã của tạo hóa, nó vốn dĩ vô tình, cứ trôi mãi, lạnh lùng mang theo những ấm áp của ngày xưa cũ, bỏ lại một mùa đông buốt giá bên bờ sông vắng.\n\nNhớ ngày nào, hai ta còn chung bước đi bên nhau trên con đường quen thuộc, nơi không gian thoảng hương thơm mùi hoa sữa nồng nàn. Mùi hương đó từng là nhân chứng cho những phút giây hò hẹn, cho những cái nắm tay, những lời thì thầm đôi lứa. Trong không gian quen thuộc ấy, câu hỏi về quá khứ và tương lai của em vang lên như một sự ngơ ngác trước định mệnh. Quá khứ đã từng rất đẹp, tương lai đã từng rất xanh, nhưng hiện tại là sự chia lìa. Nhưng cuộc đời vốn dĩ đổi thay, đến cả trăng sao trên trời còn có khi phải chia xa, huống chi là kiếp người nhỏ bé với những nhân duyên ngắn ngủi.\n\nKhi tình yêu rạn nứt, con người thường có xu hướng tìm về với thiên nhiên để gửi gắm nỗi lòng. Nhìn trời cao gọi mây hạnh phúc, nhưng mây vẫn âm thầm trôi. Mây vô tình không nghe thấy lời khẩn cầu, hay chính hạnh phúc vốn là thứ định sẵn phải trôi đi, không cách nào níu giữ?\n\nĐể rồi, phố buồn chiều nay lên trắng, một sắc trắng cô liêu, như màu của tang tóc cho một cuộc tình đã chết. Ngay trong khoảnh khắc định mệnh ấy, CHIẾC LÁ CUỐI CÙNG rơi xuống bước chân em như một dấu chấm hết nghiệt ngã, nhắc nhở về một mối tình buồn không tên. Chiếc lá cuối cùng của mùa thu, hay cũng là chút tàn dư cuối cùng của một lời thề hẹn.\n\nPhố buồn chiều nay không chỉ vắng người, mà nó còn như in hình bóng và dấu vết lâu đài anh xây trên cát. Hóa ra, tất cả những hoa lệ, những ước vọng ngày xưa anh từng dày công vun xén, chỉ là một tòa lâu đài trước sóng biển thời gian, dễ dàng sụp đổ và tan biến vào hư vô.\n\nChiếc Lá Cuối Cùng là một ca khúc trầm đầy tiếc nuối và không chỉ đơn thuần là sự kể lể về nỗi đau chia ly, mà còn là sự chiêm nghiệm về sự vô thường của tình yêu và thời gian. Khi mọi thứ trôi vào sương khói, thứ duy nhất còn lại chính là chiếc lá kỷ niệm trước lúc chia tay, được gìn giữ như một tín vật, một phần linh hồn của một cuộc tình từng rất đẹp, dù kết thúc bằng một màu xám ngắt của chia phôi..  \n……………."
+            },
+            {
+              "comment_id": "UgzVa211m-sXU-94UBN4AaABAg",
+              "video_id": "c_yo28vr86E",
+              "text_raw": "Phát đi phát lại đc 1 tiếng hc r đó kkk"
+            }
+          ]
+        },
+        {
+          "cluster": 18,
+          "comments": 8,
+          "top_words": "hộp trông thầy thử hoạt_động trung học hỏi ghép hứng kho kiến_thức kí_tự kết_cấu liên_hệ",
+          "random_examples": [
+            {
+              "comment_id": "UgxFsWcnZQvUqctjdvt4AaABAg",
+              "video_id": "apc86ahdmw0",
+              "text_raw": "do điện ảnh của mình chậm phát triển nên khi các nhân vật và cảnh tạo dựng mọi người không thể không nghĩ rằng copley của phim ảnh TQ"
+            },
+            {
+              "comment_id": "UgwNSY2bKEPuvpCOuXN4AaABAg",
+              "video_id": "35YMXlunz-c",
+              "text_raw": "tiến có nhận làm nhạc AI ko ,mình có 1so bài muốn AI làm ,1 bài bao nhiêu tieen .cám on"
+            },
+            {
+              "comment_id": "UgzLbaQWIA-YFJLD6Ml4AaABAg",
+              "video_id": "VJk35Dd7XJI",
+              "text_raw": "\"Quán tính\" được hình thành từ một bài thơ mình viết cách đây khá lâu, khi đang học lấy bằng kiến trúc. Hồi đó, môn kết cấu khô khan quá nên mình lấy những thuật ngữ kết cấu làm thơ, vừa để giải trí vừa để có thêm hứng học thi. Bây giờ bài thơ ấy trở thành hứng để mình viết \"tình ca\" này, với hòa âm theo kiểu experimental electronica jazz để hợp với những lực chuyển động trong bài hát."
+            },
+            {
+              "comment_id": "Ugw39U5_3M3klzohPn14AaABAg",
+              "video_id": "xqA2Q49ghAA",
+              "text_raw": "Khi tiếng nhạc vang lên là cảm giác như muốn vứt bỏ mọi thử hiện tại để quay về quá khứ."
+            },
+            {
+              "comment_id": "Ugy1LtXZD_8Ddug7vNx4AaABAg",
+              "video_id": "eJsEtVXlo3s",
+              "text_raw": "Link khoá học làm nhạc AI. Theo nhu cầu học viên https://hoangtienstudio.vn/sang-tac-lam-nhac-bang-ai/ liên hệ zalo trực tiếp 0329282892"
+            }
+          ]
+        },
+        {
+          "cluster": 8,
+          "comments": 6,
+          "top_words": "mẹ hiền nhe ban bình chắp con_trẻ cầu_khẩn một_lòng nhieu tôn_kính đoái lành an khắp",
+          "random_examples": [
+            {
+              "comment_id": "UgxlgFY9JCo5WsfgCKt4AaABAg",
+              "video_id": "PlgsYOKQ51g",
+              "text_raw": "[Verse 1]\nNhững lời Mẹ dạy cho chúng con\nỞ hiền, tha thứ cho nhân thế\nTrong lòng vui sướng và bình an\nLời dạy Mẹ hiền thật bao la\n\n[Verse 2]\nMẹ đẹp vô cùng ánh hào quang\nHiền từ, phúc hậu, rất đoan trang\nNgười người ai cũng tôn kính Mẹ\nGửi trọn niềm tin suốt cuộc đời\n\n[Pre-Chorus]\nNhìn xuống đàn con quá thê lương\nThảm cảnh đau thương khắp thế gian\nChiến tranh bùng nổ, bao mất mát\nChỉ Mẹ ra tay hết đau thương\n\n[Chorus]\nMẹ hiền muôn thuở, Mẹ hiền ơi!\nCon cầu xin Mẹ suốt cuộc đời\nĐoái thương con trẻ nhiều đau khổ\nBan xuống ơn lành khắp mọi nơi\nChắp tay cầu khẩn Mẹ hiền ơi\nGiúp ban thế giới được bình an\n\n[Bridge]\nMột lòng tôn kính, một lòng tin\nHướng về bên Mẹ trọn tâm hồn\nDù cho sóng gió hay sương gió\nCó Mẹ chở che, dạ ấm lòng\n\n[Chorus]\nMẹ hiền muôn thuở, Mẹ hiền ơi!\nCon cầu xin Mẹ suốt cuộc đời\nĐoái thương con trẻ nhiều đau khổ\nBan xuống ơn lành khắp mọi nơi\nChắp tay cầu khẩn Mẹ hiền ơi\nGiúp ban thế giới được bình an\n\n[Outro]\nMẹ hiền muôn thuở... Mẹ hiền ơi...\nBan xuống ơn lành... khắp mọi nơi..."
+            },
+            {
+              "comment_id": "UgwwCxd_P6GCWQuXdFh4AaABAg",
+              "video_id": "hdUdX-VPh2k",
+              "text_raw": "Cảm ơn ban M nhe ❤chúc ban vui khỏe bình an  thanh công bay cao nhe🌹chào ban"
+            },
+            {
+              "comment_id": "UgxwRxA9j26u7M1h9BZ4AaABAg",
+              "video_id": "Y2PLov70yg4",
+              "text_raw": "Cảm ơn ban M nhe❤ chúc ngày mới vui khỏe  bình an thanh công  yêu đời nhieu nhe🌹TBBN🌹"
+            },
+            {
+              "comment_id": "UgyhZ5XPISNRpultMfJ4AaABAg",
+              "video_id": "Y2PLov70yg4",
+              "text_raw": "🌹cảm ơn ban❤chúc sức khỏe thành công bay cao cao nhe ban 🌹🌹🌹🌹\n   Chào ban"
+            },
+            {
+              "comment_id": "UgwGRp1xcURhoCj5XYh4AaABAg",
+              "video_id": "ij3EeYcm7kY",
+              "text_raw": "Cảm ơn ban nhieu nhe❤chúc ban sức khỏe hạnh phúc bình an mai thành công tỏa sáng nhe❤\n   🌷🌷🌷🌷🌷🌷🌷🌷🌷🌷🌷🌷"
+            }
+          ]
+        },
+        {
+          "cluster": 3,
+          "comments": 4,
+          "top_words": "khách tha_hương ngàn mờ sầu hồi_hương cất dìu lìa mây_khói nỡ sát sớm vương rồi_đây",
+          "random_examples": [
+            {
+              "comment_id": "Ugygzk7seDWQr2rLKNV4AaABAg",
+              "video_id": "M3UzjXLuFEU",
+              "text_raw": "tui thương nên tui mới giận😘😘"
+            },
+            {
+              "comment_id": "UgyVlEdtiyUcZ7Qtmhl4AaABAg",
+              "video_id": "HIUbVG1hFw4",
+              "text_raw": "Tìm mộng xưa lãng quên tháng ngày tàn phai.Nghẹn ngào thương nhớ em...chốn xưa ơi...người xưa ơi"
+            },
+            {
+              "comment_id": "UgzSVBkhnpXSWFLj5vJ4AaABAg",
+              "video_id": "HIUbVG1hFw4",
+              "text_raw": "GIẤC MƠ HỒI HƯƠNG - VŨ THÀNH \r\nLời bài hát:\r\nLìa xa thành đô yêu dấu, một sớm khi heo may về\r\nLòng khách tha hương vương sầu thương\n\r\nNhìn em mờ trong mây khói, bước đi nhưng không nỡ rời\r\nLệ sầu tràn mi, đượm men cay đắng biệt ly\n\r\nRồi đây dù lạc ngàn nơi\r\nTa hướng về chốn xa vời\r\nTìm mộng xưa lãng quên tháng ngày tàn phai\r\nNghẹn ngào thương nhớ em, Hà Nội ơi\r\n\r\nTa mơ thấy em một chiều chớm thu\r\nDáng yêu kiều của ngày đã qua\r\nThướt tha bên hồ liễu ru\r\nLắng tiếng tiêu buồn của ngàn phím tơ\r\nThiết tha thề ước \r\nMối duyên hờ đã phai mờ trong bóng đêm mơ hồ\r\n\r\nTa mong thấy em một ngày sáng tươi\r\nTắm nắng hồng một trời sớm mai\r\nSay hương thanh bình khắp nơi\n\r\nLắng tiếng uy hùng của từng lớp trai\r\nCất cao lời hứa xây cuộc đời\r\nSầu tàn trong bóng đêm dài\r\n\r\nLìa xa thành đô yêu dấu, một sớm khi heo may về\r\nLòng khách tha hương vương sầu thương\r\nNhìn em mờ trong mây khói, \nBước đi nhưng không nỡ rời \nLệ sầu tràn mi\nĐượm men cay đắng biệt ly\r\n\r\nRồi đây dù lạc ngàn phương\r\nTa hướng về chốn sa trường\r\nCùng dìu nhau sát vai sống trong tình thương\r\nĐể cùng xây giấc mơ hồi hương\r\n\r\n\r\nLời 2 :\r\n\r\nChiều nay nhìn về quê xưa\r\nHình bóng thân yêu chưa mờ\r\nGửi tới cố hương chút niềm thương\r\nTìm em qua bao năm tháng\nVó câu chinh nhân chưa mòn\r\nNgoài chân mây xa bừng lên muôn ánh hào quang\n\r\nRồi đây trên đường hồi hương\r\nVang tiếng cười chốn xa trường\r\nMình dìu nhau sát vai sống trong tình thương\r\nĐể cùng say giấc mơ hồi hương\r\n\nThật  tuyệt vời ! ❤❤❤❤❤\n\nTCPVK HONOLULU HAWAII USA\n10/20/26"
+            },
+            {
+              "comment_id": "UgxG3dRtjAtUoqtM5694AaABAg",
+              "video_id": "HIUbVG1hFw4",
+              "text_raw": "Lòng khách tha hương , dù lạc ngàn nơi ta vẫn mang giấc mơ hồi hương .......... Mơ ước thấy e một ngày sáng tươi , tắm nắng hồng  của một sớm mai  ,say  hương thanh bình khắp nơi ....... .... ..... cất cao lời hứa  xây cuộc đời , sầu tàn trong bóng đêm dài .  Mình thích chữ 《dài 》 này nhé ,Ryan đã xuống quá xuất sắc ......\n Không thể viết gì thêm nữa ngoài 2 từ  Tuyệt vời  .  Bài nhạc thật hay và mang nhiều ý nghĩa ..Cảm xúc quá chừng luôn  nhé. ❤❤❤\nThanks  a  lot ."
+            }
+          ]
+        },
+        {
+          "cluster": 13,
+          "comments": 4,
+          "top_words": "ver cơn edm dung doi voi chang oi yeu ngay mưa la full nhung chinh",
+          "random_examples": [
+            {
+              "comment_id": "UgwFKTrOwgFAo8Ui9zt4AaABAg",
+              "video_id": "jtcsK4G316s",
+              "text_raw": "Ngay do hay ngay nay chinh la thoi gian voi nhip song ngay cang doi thay qua nhanh qua da…? Giua nhung bon be toan tinh vi tinh anh tien…? Den khi nhan ra Where are you now…vio nhung mua dong lanh leo nuoc mat hoa voi bong Tuyet…? The gioi ngay nay la the sao Chang tinh Chang cam voi phan nguoi lenh denh don doc gan cuoi doi…? O hai khia canh cuoc doi oi yeu oi yeu la gi …..xin dung lang I’m dung dung dung ma vui…..share.,"
+            },
+            {
+              "comment_id": "UgyrESSKBvQXrhJhGMl4AaABAg",
+              "video_id": "OOC4jwWzJ5Y",
+              "text_raw": "Phân đoạn cho mọi người dễ tìm nhé:\n0:00 - 2:44: Trong Cơn Mưa - Ver JP SmrStyle\n2:45 - 5:58: Trong Cơn Mưa - Ver Relaxing\n5:59 - 7:47: Trong Cơn Mưa \n7:48 - 10:44: Trong Cơn Mưa - Full Lyrics Ver 2\n10:45 - 13:37: Trong Cơn Mưa - EDM Ver 0\n13:38 - 16:25: Trong Cơn Mưa - EDM Ver 1\n16:26 - 19:05: Trong Cơn Mưa - EDM Ver 2\n19:06 - 22:29: Trong Cơn Mưa - EDM Ver 3\n22:30 - 25:38: Trong Cơn Mưa - EDM Ver Final Battle\n25:39 - End: Trong Cơn Mưa - Phonk"
+            },
+            {
+              "comment_id": "Ugyr7BtkStbe4VvAA1p4AaABAg",
+              "video_id": "Po-CwVMmZgw",
+              "text_raw": "😢 không kìm nổi nước mắt"
+            },
+            {
+              "comment_id": "UgygWvv3xG1X9zk2EuV4AaABAg",
+              "video_id": "khjcqAX6uOw",
+              "text_raw": "hóng link full quá rồi. 26s này không đủ để thoả mãn lỗ tai t"
+            }
+          ]
+        },
+        {
+          "cluster": 4,
+          "comments": 2,
+          "top_words": "chúa thánh cầu_xin ban_ơn bầu dắt_dìu pháp tin_yêu vững xi đoàn ứng_cứu cầu phan phúc",
+          "random_examples": [
+            {
+              "comment_id": "UgwfzrU4AJ6NG1Jbun14AaABAg",
+              "video_id": "_ao_kSbW4nk",
+              "text_raw": "DẠ MÔ PHẬT 🙏\nDẠ CON CÚI ĐẦU CẦU XIN CHA MẸ NGÔI CAO 🙏\nDẠ CON CẦU XIN CÁC ĐẤNG NGÔI CAO...🙏\nDẠ XIN ỨNG CỨU BẢO TRỢ TRẦN XÁC CÔ CON ĐƯỢC BÌNH AN🙏\nDẠ XIN ỨNG CỨU PHÁP ĐẠO🙏\nDẠ XIN ỨNG CỨU VỊ LAI PHÁP🙏\nDẠ CÁC CON CÚI ĐẦU CẦU XIN, CẦU XIN, CẦU XIN...🙏🙏🙏\nNAM MÔ VỊ LAI PHÁP CHỨNG MINH 🙏🙏🙏"
+            },
+            {
+              "comment_id": "UgzwnyBHzjuKCIGRznh4AaABAg",
+              "video_id": "JHIX-C0ZD2A",
+              "text_raw": "[Verse 1]\nRời bỏ lầu son với bạc vàng,\nÁo nhung trả lại chốn trần gian.\nNghe lời Chúa gọi \"Xây Thánh Đường\",\nĐôi tay nâng đá dựng nhà Cha.\nKhoác áo thô nâu bước dặm trường,\nThương người phong cùi trọn tình thương.\n\n[Chorus]\nÔi Thánh Phan-xi-cô khó nghèo!\nVâng nghe tiếng Chúa bước đi theo.\nCầu bầu cùng Chúa ban ơn phúc,\nDắt dìu đoàn con vững tin yêu.\n\n[Verse 2]\nCùng với muôn loài hát ngợi ca,\nTôn vinh Thiên Chúa khắp gần xa.\nTrên đỉnh La Ver-na vắng lặng,\nNăm lằn dấu thánh nở thành hoa.\n\n[Chorus]\nÔi Thánh Phan-xi-cô khó nghèo!\nVâng nghe tiếng Chúa bước đi theo.\nCầu bầu cùng Chúa ban ơn phúc,\nDắt dìu đoàn con vững tin yêu.\n\n[Bridge]\nNguyện xin thánh chỉ lối soi đường,\nCho con lòng mến với tình thương.\nLấy đức khiêm nhường làm lẽ sống,\nLàm khí cụ bình an giữa đời,\nQuên mình theo Chúa suốt muôn đời!\n\n[Chorus]\nÔi Thánh Phan-xi-cô khó nghèo!\nVâng nghe tiếng Chúa bước đi theo.\nCầu bầu cùng Chúa ban ơn phúc,\nDắt dìu đoàn con vững tin yêu.\n\n[Outro]\nXin thương dẫn lối bước dương gian,\nMai sau hưởng phúc chốn thiên đàng.\nA-men!"
+            }
+          ]
+        },
+        {
+          "cluster": 7,
+          "comments": 2,
+          "top_words": "chim sáo trả tháng giữa biếc biền_biệt biển_cả duyên_nợ dạt_dào hóa người_dưng ngại ngả ngập_ngừng",
+          "random_examples": [
+            {
+              "comment_id": "Ugwb2Mi2uihnAYRYk114AaABAg",
+              "video_id": "JfaEwuTK7vg",
+              "text_raw": "Thời xuân xanh e ấp chuyện chung đôi\nTình vừa chớm, nụ hôn đầu vụng dại\nChưa kịp trao nhau dòng thư viết vội\nĐã ngập ngừng chia hai ngả xa xôi\n\nTháng năm trôi lặng lẽ giữa dòng đời,\nBóng nhạn biền biệt giữa chốn trùng khơi\nPhút giây chạm lại bóng hình xưa cũ\nKỷ niệm ngày nào bỗng dạt dào rơi.\n\nChưa thốt thành lời mà lòng ngơ ngác\nNgại tháng năm trôi, mắt biếc phai nhoà\nĐêm muộn thì thầm những lời hò hẹn\nRồi một ngày lời thề ước phôi pha\n\nChim sáo xổ lồng chim sáo bay xa\nĐã có bến dừng bình yên che chở\nTa vẫn cô đơn giữa đời lặng lẽ\nDuyên nợ không thành mình hóa người dưng\n\nTrả thuyền về với biển cả mênh mông\nTrả nắng về trời, trả mây về gió\nCảm ơn người qua đời ta rất khẽ\nChút bình yên này, xin giữ cho nhau\n\nĐể giữ trọn tình, ta bước thong dong.\n\nThời xuân xanh e ấp chuyện chung đôi\nTình vừa chớm, nụ hôn đầu vụng dại\nChưa kịp trao nhau dòng thư viết vội\nĐã ngập ngừng chia hai ngả xa xôi\n\nTháng năm trôi lặng lẽ giữa dòng đời,\nBóng nhạn biền biệt giữa chốn trùng khơi\nPhút giây chạm lại bóng hình xưa cũ\nKỷ niệm ngày nào bỗng dạt dào rơi.\n\nChưa thốt thành lời mà lòng ngơ ngác\nNgại tháng năm trôi, mắt biếc phai nhoà\nĐêm muộn thì thầm những lời hò hẹn\nRồi một ngày lời thề ước phôi pha\n\nChim sáo xổ lồng chim sáo bay xa\nĐã có bến dừng bình yên che chở\nTa vẫn cô đơn giữa đời lặng lẽ\nDuyên nợ không thành mình hóa người dưng\n\nTrả thuyền về với biển cả mênh mông\nTrả nắng về trời, trả mây về gió\nCảm ơn người qua đời ta rất khẽ\nChút bình yên này, xin giữ cho nhau\n\nĐể giữ trọn tình, ta bước thong dong."
+            },
+            {
+              "comment_id": "UgyUA8GAy251VsX-UQV4AaABAg",
+              "video_id": "2diLIIFYgp0",
+              "text_raw": "Chầm. Dong..chút. thì. Chí. Linh. Thanh. Tuyền. Nha"
+            }
+          ]
+        }
+      ]
+    },
+    "synthetic": {
+      "source": "/workspace/Big-Data-YTB/data/source_comparison/synthetic/topics/comments",
+      "seed": 42,
+      "k": 20,
+      "alpha": 0.1,
+      "beta": 0.1,
+      "iterations": 30,
+      "min_word_freq": 2,
+      "vi_heuristic": false,
+      "language_filter_method": "disabled",
+      "cap_per_video": null,
+      "funnel": {
+        "input": 12299,
+        "modelable": 12299,
+        "without_replies": 12299,
+        "unique_text": 12299,
+        "after_vi_heuristic": 12299,
+        "after_video_cap": 12299,
+        "training": 12299
+      },
+      "vocabulary_size": 664,
+      "active_topics": 20,
+      "videos": 500,
+      "top_video_fraction": 0.0034962192048133994,
+      "top_10_video_fraction": 0.03065289860964306,
+      "history": [
+        {
+          "iteration": 1,
+          "moved": 11292,
+          "active_topics": 20
+        },
+        {
+          "iteration": 2,
+          "moved": 5494,
+          "active_topics": 20
+        },
+        {
+          "iteration": 3,
+          "moved": 2486,
+          "active_topics": 20
+        },
+        {
+          "iteration": 4,
+          "moved": 1797,
+          "active_topics": 20
+        },
+        {
+          "iteration": 5,
+          "moved": 1389,
+          "active_topics": 20
+        },
+        {
+          "iteration": 6,
+          "moved": 1211,
+          "active_topics": 20
+        },
+        {
+          "iteration": 7,
+          "moved": 1099,
+          "active_topics": 20
+        },
+        {
+          "iteration": 8,
+          "moved": 988,
+          "active_topics": 20
+        },
+        {
+          "iteration": 9,
+          "moved": 1011,
+          "active_topics": 20
+        },
+        {
+          "iteration": 10,
+          "moved": 984,
+          "active_topics": 20
+        },
+        {
+          "iteration": 11,
+          "moved": 922,
+          "active_topics": 20
+        },
+        {
+          "iteration": 12,
+          "moved": 929,
+          "active_topics": 20
+        },
+        {
+          "iteration": 13,
+          "moved": 898,
+          "active_topics": 20
+        },
+        {
+          "iteration": 14,
+          "moved": 886,
+          "active_topics": 20
+        },
+        {
+          "iteration": 15,
+          "moved": 906,
+          "active_topics": 20
+        },
+        {
+          "iteration": 16,
+          "moved": 921,
+          "active_topics": 20
+        },
+        {
+          "iteration": 17,
+          "moved": 983,
+          "active_topics": 20
+        },
+        {
+          "iteration": 18,
+          "moved": 969,
+          "active_topics": 20
+        },
+        {
+          "iteration": 19,
+          "moved": 882,
+          "active_topics": 20
+        },
+        {
+          "iteration": 20,
+          "moved": 902,
+          "active_topics": 20
+        },
+        {
+          "iteration": 21,
+          "moved": 917,
+          "active_topics": 20
+        },
+        {
+          "iteration": 22,
+          "moved": 899,
+          "active_topics": 20
+        },
+        {
+          "iteration": 23,
+          "moved": 878,
+          "active_topics": 20
+        },
+        {
+          "iteration": 24,
+          "moved": 913,
+          "active_topics": 20
+        },
+        {
+          "iteration": 25,
+          "moved": 892,
+          "active_topics": 20
+        },
+        {
+          "iteration": 26,
+          "moved": 878,
+          "active_topics": 20
+        },
+        {
+          "iteration": 27,
+          "moved": 878,
+          "active_topics": 20
+        },
+        {
+          "iteration": 28,
+          "moved": 890,
+          "active_topics": 20
+        },
+        {
+          "iteration": 29,
+          "moved": 886,
+          "active_topics": 20
+        },
+        {
+          "iteration": 30,
+          "moved": 871,
+          "active_topics": 20
+        }
+      ],
+      "status": "completed",
+      "upstream_language_filter": "Lingua VI confidence/margin",
+      "topic_examples": [
+        {
+          "cluster": 19,
+          "comments": 2043,
+          "top_words": "phiên_bản thấm thêm chạm lòng thật_sự ghê ad làm đầy_đủ ngân phê sheet karaoke truyền_cảm",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0019057",
+              "video_id": "SYN_V0455",
+              "text_raw": "credit tác giả minh bạch đó, ad có làm thêm phiên bản khác không? 🎶"
+            },
+            {
+              "comment_id": "SYN_C0006440",
+              "video_id": "SYN_V0232",
+              "text_raw": "bản AI này khá tinh tế, ad có làm thêm phiên bản khác không?"
+            },
+            {
+              "comment_id": "SYN_C0021492",
+              "video_id": "SYN_V0247",
+              "text_raw": "Ad có chia sẻ quy trình làm nhạc không? nguồn giọng hát đầy đủ thật!"
+            },
+            {
+              "comment_id": "SYN_C0007625",
+              "video_id": "SYN_V0475",
+              "text_raw": "cưng bài này ghê ✨"
+            },
+            {
+              "comment_id": "SYN_C0031453",
+              "video_id": "SYN_V0127",
+              "text_raw": "Giọng AI nghe thích thật, ad có làm thêm phiên bản khác không? 👏"
+            }
+          ]
+        },
+        {
+          "cluster": 16,
+          "comments": 749,
+          "top_words": "piano phối guitar nhạc_cụ giao_thoa nền không_gian rối tính điện_tử pop chiều sâu mộc pha",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0031160",
+              "video_id": "SYN_V0299",
+              "text_raw": "Ad cho xin bản phối mộc được không? Bản phối nhồi nhiều nhạc cụ quá, mình thấy rối và khó tập trung. Bản thu này có vài chi tiết khác với những gì phần giới thiệu gợi ra. 😔"
+            },
+            {
+              "comment_id": "SYN_C0009681",
+              "video_id": "SYN_V0449",
+              "text_raw": "Mình chưa thích phần hòa âm vì nhạc nền lấn át hết giọng chính. Đây là điểm mình thấy cần ưu tiên sửa. Có một đoạn chuyển khiến mình phải tua lại để nghe kỹ."
+            },
+            {
+              "comment_id": "SYN_C0010104",
+              "video_id": "SYN_V0105",
+              "text_raw": "Loa điện thoại nhỏ nhưng vẫn nghe được nét chính của bản này.\nMình thích phần giao thoa giữa nhạc pop và nhạc mộc của bài này. Mình sẽ lưu lại để nghe tiếp. ✨"
+            },
+            {
+              "comment_id": "SYN_C0035179",
+              "video_id": "SYN_V0295",
+              "text_raw": "Ad cho xin bản phối mộc được không? Bản phối dùng những nhạc cụ nào ngoài piano và guitar vậy? Trong playlist có nhiều bản tương tự, thử nghe nối tiếp mới rõ. 🤔"
+            },
+            {
+              "comment_id": "SYN_C0009960",
+              "video_id": "SYN_V0223",
+              "text_raw": "Có bản tách riêng nhạc nền không ad? hòa âm êm ghê! 🥰"
+            }
+          ]
+        },
+        {
+          "cluster": 7,
+          "comments": 741,
+          "top_words": "một_thể_loại phụ_trách bước viết đề_xuất tự phương_án thế_nào đề_xuất_vậy cấp quyền sẵn giai_điệu_này suno cấu_trúc",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0003678",
+              "video_id": "SYN_V0002",
+              "text_raw": "Phần lời ai viết vậy 🎧"
+            },
+            {
+              "comment_id": "SYN_C0018648",
+              "video_id": "SYN_V0288",
+              "text_raw": "Trong bản này con người phụ trách phần sáng tác, chọn giọng hay chỉnh hòa âm? Mình muốn tìm hiểu thêm trước khi nhận xét. Riêng đoạn cuối cần nghe liền với phần trước mới hiểu dụng ý. 🤔"
+            },
+            {
+              "comment_id": "SYN_C0023019",
+              "video_id": "SYN_V0040",
+              "text_raw": "Ad tự viết lời hay sửa lời AI trước? bản chỉnh tay có cá tính! ❤️"
+            },
+            {
+              "comment_id": "SYN_C0006352",
+              "video_id": "SYN_V0143",
+              "text_raw": "Chỗ chuyển sang đoạn cuối cần được nghe trong cả mạch bài.\nMình muốn xem bản lời đầy đủ để hiểu câu chuyện của ca khúc. Mình đang ghi lại để so sánh các phiên bản."
+            },
+            {
+              "comment_id": "SYN_C0017382",
+              "video_id": "SYN_V0181",
+              "text_raw": "Mình muốn biết những bước nào trong quy trình được thực hiện bằng AI. Phần lời và phần nhạc cần nghe cùng nhau mới hiểu được ý. 🤔"
+            }
+          ]
+        },
+        {
+          "cluster": 9,
+          "comments": 673,
+          "top_words": "nữ ngọt mẫu quá_trình khác_biệt tự_nhiên đặt ấm đơ cover cạnh nè hoàn_toàn giọng nháp",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0013935",
+              "video_id": "SYN_V0367",
+              "text_raw": "Thử đặt cạnh một bản cùng phong cách thì khác biệt khá rõ.\nMình không thích việc giấu nguồn gốc AI rồi giới thiệu như người thật hát. Mong có thêm sự chăm chút ở bản tiếp theo. 😔"
+            },
+            {
+              "comment_id": "SYN_C0028528",
+              "video_id": "SYN_V0046",
+              "text_raw": "Giọng nữ nghe thích thật đó mn 🎶"
+            },
+            {
+              "comment_id": "SYN_C0031693",
+              "video_id": "SYN_V0470",
+              "text_raw": "Giọng ai: mình thích cách giọng AI lên cao nhẹ nhàng mà không bị chói. Mình ủng hộ hướng thử nghiệm này. 💖"
+            },
+            {
+              "comment_id": "SYN_C0008574",
+              "video_id": "SYN_V0027",
+              "text_raw": "Giọng AI truyền được sự day dứt của bài hát, nghe mà mình thấy xúc động. Trong playlist có nhiều bản tương tự, thử nghe nối tiếp mới rõ. ❤️"
+            },
+            {
+              "comment_id": "SYN_C0014180",
+              "video_id": "SYN_V0125",
+              "text_raw": "Thử đặt cạnh một bản cùng phong cách thì khác biệt khá rõ. Mình ủng hộ cách giới thiệu trung thực rằng đây là một bản nhạc dùng AI."
+            }
+          ]
+        },
+        {
+          "cluster": 8,
+          "comments": 658,
+          "top_words": "bè đầy_đặn đáp phụ điệp_khúc_vậy xếp khó_chịu chen lớp quyện chính hòa nâng nhớ bắt",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0030040",
+              "video_id": "SYN_V0104",
+              "text_raw": "Ad xếp mấy lớp giọng ở điệp khúc vậy? Các lớp giọng AI hòa vào nhau khá đẹp, không làm mất câu hát chính. Buổi tối ngồi yên nghe mới chú ý được các chi tiết nhỏ."
+            },
+            {
+              "comment_id": "SYN_C0016406",
+              "video_id": "SYN_V0349",
+              "text_raw": "Chỗ chuyển sang đoạn cuối cần được nghe trong cả mạch bài. Mình thích cách bè đáp lại câu hát, đoạn này nghe rất có không khí. 👍"
+            },
+            {
+              "comment_id": "SYN_C0022001",
+              "video_id": "SYN_V0246",
+              "text_raw": "Ad có sheet cho đoạn nhạc này không? Giai điệu bắt tai và có điểm nhấn, nghe một lần đã nhớ đoạn chính. Không biết thiết bị của mọi người ra sao, đây là cảm nhận lúc mình nghe. ❤️"
+            },
+            {
+              "comment_id": "SYN_C0039474",
+              "video_id": "SYN_V0436",
+              "text_raw": "Phần bè đẹp ghê 🎶"
+            },
+            {
+              "comment_id": "SYN_C0014707",
+              "video_id": "SYN_V0083",
+              "text_raw": "Lần đầu chỉ nghe lướt, lần này bật lại mới để ý kỹ hơn. Phần bè nâng giọng chính vừa phải, mình thích cảm giác đầy đặn ở điệp khúc. ✨"
+            }
+          ]
+        },
+        {
+          "cluster": 6,
+          "comments": 647,
+          "top_words": "đánh_giá bản_quyền phép trình_bày yên_tâm công_bố biến khả_năng nhanh thành rõ_ràng đâu_vậy sáo giấy_phép vần",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0035053",
+              "video_id": "SYN_V0115",
+              "text_raw": "đoạn thử nghiệm khác biệt ghê, ý tưởng đầu tiên xuất phát từ đâu vậy? 💖"
+            },
+            {
+              "comment_id": "SYN_C0018595",
+              "video_id": "SYN_V0214",
+              "text_raw": "thông tin công cụ rõ ràng quá, ad có chia sẻ quy trình làm nhạc không? 💖"
+            },
+            {
+              "comment_id": "SYN_C0007160",
+              "video_id": "SYN_V0147",
+              "text_raw": "Tui đánh giá cao khả năng biến ý nhạc nhỏ thành bản nghe thử nhanh như vậy. Sáng nay mới nghe được trọn vẹn, trước đó toàn lướt qua. 👏"
+            },
+            {
+              "comment_id": "SYN_C0035782",
+              "video_id": "SYN_V0210",
+              "text_raw": "Ý tưởng đầu tiên xuất phát từ đâu vậy? âm sắc mới thú vị ghê!"
+            },
+            {
+              "comment_id": "SYN_C0034159",
+              "video_id": "SYN_V0359",
+              "text_raw": "Nguồn giọng hát: công bố công cụ và quy trình làm nhạc rõ ràng là điểm mình đánh giá cao. Cảm ơn người làm nhạc đã chia sẻ. 💖"
+            }
+          ]
+        },
+        {
+          "cluster": 11,
+          "comments": 634,
+          "top_words": "bắt_đầu_từ tiếp_cận trả cơ_hội đâu phí sáng_tác chuẩn_bị nản thao_tác thực_tế tinh_tế làm_việc dễ tôn_trọng",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0039693",
+              "video_id": "SYN_V0037",
+              "text_raw": "Người mới bắt đầu từ đâu vậy ad? Công cụ AI làm việc sáng tác dễ tiếp cận hơn, mình thấy đây là cơ hội tốt. Tan ca bật lên nghe, tâm trạng cũng ảnh hưởng cảm nhận khá nhiều. ✨"
+            },
+            {
+              "comment_id": "SYN_C0013794",
+              "video_id": "SYN_V0447",
+              "text_raw": "Quy trình này khá đơn giản, dùng công cụ này có cần trả phí không?"
+            },
+            {
+              "comment_id": "SYN_C0029902",
+              "video_id": "SYN_V0169",
+              "text_raw": "Lần đầu chỉ nghe lướt, lần này bật lại mới để ý kỹ hơn. Mình thấy giới hạn trả phí quá nhiều nên việc thử làm nhạc AI vẫn khó tiếp cận. 😔"
+            },
+            {
+              "comment_id": "SYN_C0033052",
+              "video_id": "SYN_V0307",
+              "text_raw": "Ad dùng giọng mẫu nào vậy? Mình thích cách giọng AI lên cao nhẹ nhàng mà không bị chói. Qua vài lần nghe mới thấy đoạn đầu và đoạn sau liên quan với nhau. 💖"
+            },
+            {
+              "comment_id": "SYN_C0031910",
+              "video_id": "SYN_V0425",
+              "text_raw": "Cả bài có nhiều chỗ để bàn chứ không chỉ riêng đoạn được cắt ra. Mình thấy bản cover bằng AI bắt chước giọng quá lộ và nghe hơi gượng. 🙁"
+            }
+          ]
+        },
+        {
+          "cluster": 4,
+          "comments": 613,
+          "top_words": "cảm_thấy giãn thư bản_gốc hát_vậy thường hoàn_chỉnh phát_triển quay thông_thường dựa trình_diễn phòng nhẹ lúc",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0003703",
+              "video_id": "SYN_V0258",
+              "text_raw": "Tò mò chút: bản này nghe lúc học có hợp ko nhỉ?"
+            },
+            {
+              "comment_id": "SYN_C0025116",
+              "video_id": "SYN_V0475",
+              "text_raw": "Mình muốn nghe cùng ý nhạc này ở phiên bản acoustic để so sánh. Sau vài bản nhạc cùng kiểu thì bản này có điểm để so sánh. 🎧"
+            },
+            {
+              "comment_id": "SYN_C0001715",
+              "video_id": "SYN_V0452",
+              "text_raw": "Bản AI cover giữ tinh thần bài gốc mà vẫn có cách thể hiện riêng, mình thích. Bật mức âm lượng vừa phải thì cảm nhận khác với nghe thật lớn. 👏"
+            },
+            {
+              "comment_id": "SYN_C0039210",
+              "video_id": "SYN_V0341",
+              "text_raw": "Ban đầu chỉ định nghe một đoạn rồi lại ngồi nghe hết bài. Bản AI cover giữ tinh thần bài gốc mà vẫn có cách thể hiện riêng, mình thích. ❤️"
+            },
+            {
+              "comment_id": "SYN_C0039165",
+              "video_id": "SYN_V0383",
+              "text_raw": "Mình thích việc AI giúp người chưa có phòng thu vẫn thử được ý tưởng âm nhạc. Rất mong phiên bản tiếp theo. Đoạn đầu tạo cảm giác khác, tới cao trào lại đổi hẳn không khí. 💖"
+            }
+          ]
+        },
+        {
+          "cluster": 15,
+          "comments": 608,
+          "top_words": "bất_ngờ buồn tổng_hợp truyền đồng_cảm công_thức quen_thuộc ấm_áp day_dứt nỗi vô_cảm nhấn_nhá tác_giả_thử hồn thú_vị",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0002628",
+              "video_id": "SYN_V0139",
+              "text_raw": "Giọng hát bị méo rồi 😔"
+            },
+            {
+              "comment_id": "SYN_C0024410",
+              "video_id": "SYN_V0227",
+              "text_raw": "Không khí bài: mình bất ngờ vì bản nhạc tổng hợp vẫn gợi được cảm giác ấm áp như vậy. Có thể thấy người làm đã dành công sức. ✨"
+            },
+            {
+              "comment_id": "SYN_C0039618",
+              "video_id": "SYN_V0463",
+              "text_raw": "Giọng này là ai hoàn toàn à? Chất giọng tổng hợp sáng và rõ, nghe cả bài vẫn thấy dễ chịu. Bản thu này có vài chi tiết khác với những gì phần giới thiệu gợi ra."
+            },
+            {
+              "comment_id": "SYN_C0001368",
+              "video_id": "SYN_V0174",
+              "text_raw": "có ai thấy đoạn ngân thiếu hồn không? 🙁"
+            },
+            {
+              "comment_id": "SYN_C0013568",
+              "video_id": "SYN_V0122",
+              "text_raw": "Không biết thiết bị của mọi người ra sao, đây là cảm nhận lúc mình nghe.\nMình không thích cách nuốt phụ âm cuối, nhiều chỗ nghe không rõ lời. Mong có thêm sự chăm chút ở bản tiếp theo. 😕"
+            }
+          ]
+        },
+        {
+          "cluster": 18,
+          "comments": 599,
+          "top_words": "kết bridge dẫn_dắt trôi ổn_định rút_gọn thẳng khép dài chủ_ý mượt mở_đầu sắp_xếp cắt đủ",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0020085",
+              "video_id": "SYN_V0112",
+              "text_raw": "Đoạn nhạc có nét riêng đó mn 👏"
+            },
+            {
+              "comment_id": "SYN_C0017931",
+              "video_id": "SYN_V0383",
+              "text_raw": "Đoạn chuyển vào điệp khúc được dẫn dắt mượt, mình thích cách sắp xếp này. Vừa nghe vừa nhìn phần lời nên để ý được một số chi tiết khác. 🎶"
+            },
+            {
+              "comment_id": "SYN_C0039286",
+              "video_id": "SYN_V0270",
+              "text_raw": "Cách giữ nhịp ổn định làm cả bài trôi rất mượt, mình thích phần này. Mình ủng hộ hướng thử nghiệm này. Lần đầu chỉ nghe lướt, lần này bật lại mới để ý kỹ hơn. ❤️"
+            },
+            {
+              "comment_id": "SYN_C0009787",
+              "video_id": "SYN_V0074",
+              "text_raw": "Bố cục bài hát gọn và có cao trào rõ, mình nghe từ đầu đến cuối rất cuốn. Mở nhỏ vẫn cảm nhận được cách sắp xếp các lớp âm thanh. 🎶"
+            },
+            {
+              "comment_id": "SYN_C0016766",
+              "video_id": "SYN_V0011",
+              "text_raw": "Giai điệu: mình thích giai điệu bài này vì vừa gần gũi vừa có nét riêng. Mong được nghe thêm những bản chăm chút như thế này. 👍"
+            }
+          ]
+        },
+        {
+          "cluster": 17,
+          "comments": 576,
+          "top_words": "phát_âm nhả miền chữ dấu nguyên ngắn nói thành_thật bắc nam_vậy thay_vì việt tay chuẩn",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0014743",
+              "video_id": "SYN_V0090",
+              "text_raw": "Mình thích việc AI giúp người chưa có phòng thu vẫn thử được ý tưởng âm nhạc. Thành thật mà nói, cần nghe nguyên bài thay vì chỉ một đoạn ngắn."
+            },
+            {
+              "comment_id": "SYN_C0005475",
+              "video_id": "SYN_V0011",
+              "text_raw": "Đọc lời trước rồi nghe lại thấy cách hiểu câu hát cũng thay đổi.\nMình thích cách nhả chữ trong bản này, lời Việt nghe mượt và rõ. Mình thấy đáng để dành thời gian lắng nghe."
+            },
+            {
+              "comment_id": "SYN_C0031872",
+              "video_id": "SYN_V0369",
+              "text_raw": "Sau vài bản nhạc cùng kiểu thì bản này có điểm để so sánh. Mình thích cách nhả chữ trong bản này, lời Việt nghe mượt và rõ."
+            },
+            {
+              "comment_id": "SYN_C0001563",
+              "video_id": "SYN_V0452",
+              "text_raw": "Câu cuối bài có ý nghĩa gì nhỉ? Mình thấy lời bài hát sáo và lặp ý, chưa kể được câu chuyện rõ ràng. Vừa nghe vừa nhìn phần lời nên để ý được một số chi tiết khác. 😔"
+            },
+            {
+              "comment_id": "SYN_C0008653",
+              "video_id": "SYN_V0058",
+              "text_raw": "dấu tiếng Việt dễ nghe ghê 🥰"
+            }
+          ]
+        },
+        {
+          "cluster": 13,
+          "comments": 546,
+          "top_words": "trầm mix ổn chất_lượng cân_bằng từng_lớp sạch âm bass rè bản_âm_thanh âm_thanh nén ít mạnh",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0006920",
+              "video_id": "SYN_V0115",
+              "text_raw": "độ cân bằng gọn thật ✨"
+            },
+            {
+              "comment_id": "SYN_C0014364",
+              "video_id": "SYN_V0279",
+              "text_raw": "Âm cao bị nén nhiều, ad kiểm tra lại được không? 🙁"
+            },
+            {
+              "comment_id": "SYN_C0011157",
+              "video_id": "SYN_V0321",
+              "text_raw": "Đeo tai nghe rồi mới thấy các chi tiết ở phía sau giọng chính. Mình thích chất lượng bản thu này vì không bị rè ở đoạn cao trào."
+            },
+            {
+              "comment_id": "SYN_C0021830",
+              "video_id": "SYN_V0486",
+              "text_raw": "Mọi người nghe bằng loa hay tai nghe? Âm thanh sạch và cân bằng, nghe bằng tai nghe vẫn tách được từng lớp. Riêng đoạn cuối cần nghe liền với phần trước mới hiểu dụng ý. 💖"
+            },
+            {
+              "comment_id": "SYN_C0005856",
+              "video_id": "SYN_V0497",
+              "text_raw": "Mình thích việc ghi rõ phần nào do AI tạo và phần nào do người chỉnh sửa. Ở phần giữa có một chi tiết nhỏ khiến mình chú ý. 🥰"
+            }
+          ]
+        },
+        {
+          "cluster": 3,
+          "comments": 511,
+          "top_words": "phần_nào tạo_vậy mô_tả dù cụ_thể suốt chờ giấu do góp_ý nhãn học_hỏi dẫn khác_vậy xem",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0011675",
+              "video_id": "SYN_V0415",
+              "text_raw": "phần người làm thiếu chăm chút luôn á"
+            },
+            {
+              "comment_id": "SYN_C0016388",
+              "video_id": "SYN_V0465",
+              "text_raw": "Mình thích phần giao thoa giữa nhạc pop và nhạc mộc của bài này. Xem cả mô tả để hiểu phần nào do người làm và phần nào dùng AI. 👍"
+            },
+            {
+              "comment_id": "SYN_C0019080",
+              "video_id": "SYN_V0357",
+              "text_raw": "Dù thích hay chưa thích thì cũng muốn góp ý vào từng chỗ cụ thể.\nMình thấy bản cover bằng AI này làm mới ca khúc khá tinh tế. Mình sẽ lưu lại để nghe tiếp. ❤️"
+            },
+            {
+              "comment_id": "SYN_C0010758",
+              "video_id": "SYN_V0247",
+              "text_raw": "nguồn giọng hát bị giấu mất, ad kiểm tra lại được không?"
+            },
+            {
+              "comment_id": "SYN_C0004201",
+              "video_id": "SYN_V0442",
+              "text_raw": "Người làm chỉnh phần nào sau khi AI tạo vậy? cách kết hợp này có chất riêng! 👏"
+            }
+          ]
+        },
+        {
+          "cluster": 1,
+          "comments": 454,
+          "top_words": "dân_gian đàn_tranh dân_ca lấy vùng cảm_hứng luyến duyên mộc_mạc thương luyến_láy nam méo gần_gũi đưa",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0001324",
+              "video_id": "SYN_V0236",
+              "text_raw": "Có bản giữ nhiều chất dân gian hơn không ad? Mình muốn tìm hiểu cách tác giả kết hợp nhạc cụ dân tộc với AI. Qua vài lần nghe mới thấy đoạn đầu và đoạn sau liên quan với nhau."
+            },
+            {
+              "comment_id": "SYN_C0010888",
+              "video_id": "SYN_V0344",
+              "text_raw": "Màu sắc việt: mình thích cách bài hát gợi hình ảnh quê nhà mà không làm quá. Mình ủng hộ hướng thử nghiệm này. ✨"
+            },
+            {
+              "comment_id": "SYN_C0031053",
+              "video_id": "SYN_V0030",
+              "text_raw": "Tiếng đàn tranh gần gũi quá ❤️"
+            },
+            {
+              "comment_id": "SYN_C0033980",
+              "video_id": "SYN_V0155",
+              "text_raw": "Bài này lấy chất dân ca vùng nào vậy? tiếng đàn tranh gần gũi quá! 🎶"
+            },
+            {
+              "comment_id": "SYN_C0005110",
+              "video_id": "SYN_V0136",
+              "text_raw": "Nét quê trong bài gần gũi quá, có bản giữ nhiều chất dân gian hơn ko ad?"
+            }
+          ]
+        },
+        {
+          "cluster": 2,
+          "comments": 446,
+          "top_words": "nối diễn_tả giản_dị nghĩ mềm_mại mô_típ xuất_hiện ý_nghĩa tròn_trịa phụ_âm cá_nhân danh_sách phát phù_hợp trọn",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0018659",
+              "video_id": "SYN_V0023",
+              "text_raw": "Đọc lời trước rồi nghe lại thấy cách hiểu câu hát cũng thay đổi.\nMình muốn đối chiếu lời viết với cách AI đọc dấu ở từng câu. Có bạn nào hiểu phần này giải thích giúp mình không? 🤔"
+            },
+            {
+              "comment_id": "SYN_C0023911",
+              "video_id": "SYN_V0353",
+              "text_raw": "Câu chữ ý nghĩa quá, cho xin lời đầy đủ được không? 👏"
+            },
+            {
+              "comment_id": "SYN_C0024427",
+              "video_id": "SYN_V0063",
+              "text_raw": "Cách nhả chữ: aI xử lý phụ âm cuối gọn hơn mình nghĩ, câu hát nghe tròn trịa. Cảm ơn người làm nhạc đã chia sẻ. 🥰"
+            },
+            {
+              "comment_id": "SYN_C0032433",
+              "video_id": "SYN_V0145",
+              "text_raw": "Xem cả mô tả để hiểu phần nào do người làm và phần nào dùng AI. AI đọc sai dấu ở vài chữ làm mình hiểu nhầm ý câu hát."
+            },
+            {
+              "comment_id": "SYN_C0039584",
+              "video_id": "SYN_V0173",
+              "text_raw": "Câu hát: mình muốn đối chiếu lời viết với cách AI đọc dấu ở từng câu. Mọi người có cách nhìn thế nào về phần này? 🎧"
+            }
+          ]
+        },
+        {
+          "cluster": 10,
+          "comments": 445,
+          "top_words": "cảnh hình khung ăn mv biến_dạng khuôn_mặt ăn_nhịp mắt liên_kết màu_sắc dồn dựng đẹp chuyển",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0013410",
+              "video_id": "SYN_V0217",
+              "text_raw": "Càng nghe kỹ càng nhận ra vài chỗ khác với ấn tượng ban đầu.\nMV có vài khung hình đẹp và ăn với nhịp nhạc, xem rất dễ chịu. Rất mong phiên bản tiếp theo. 🎶"
+            },
+            {
+              "comment_id": "SYN_C0002211",
+              "video_id": "SYN_V0166",
+              "text_raw": "Màu sắc mv: mV có vài khung hình đẹp và ăn với nhịp nhạc, xem rất dễ chịu. Làm tiếp những sản phẩm như vậy nhé. 🥰"
+            },
+            {
+              "comment_id": "SYN_C0033381",
+              "video_id": "SYN_V0190",
+              "text_raw": "Cảnh này dùng công cụ nào vậy? Mình đang xem sự liên kết giữa lời bài hát và các cảnh trong MV. Chạy lại cùng một đoạn bằng hai thiết bị cho cảm nhận khác nhau. 🎵"
+            },
+            {
+              "comment_id": "SYN_C0022876",
+              "video_id": "SYN_V0403",
+              "text_raw": "Cách chuyển cảnh hợp nhạc thật thiệt ❤️"
+            },
+            {
+              "comment_id": "SYN_C0021754",
+              "video_id": "SYN_V0142",
+              "text_raw": "Mình không thích các khuôn mặt bị biến dạng trong MV vì làm mất cảm xúc nghe nhạc. Thử đặt cạnh một bản cùng phong cách thì khác biệt khá rõ."
+            }
+          ]
+        },
+        {
+          "cluster": 12,
+          "comments": 420,
+          "top_words": "tiết_tấu gõ chắc nhịp trống sinh_động tempo chơi đếm đệm theo chân nước_chấm bốn ổn_áp",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0005067",
+              "video_id": "SYN_V0219",
+              "text_raw": "Lúc đầu cứ tưởng bản nào cũng giống nhau, nghe kỹ mới thấy khác.\nNhịp trống chắc và tiết tấu cuốn, mình nghe rất muốn gõ nhịp theo. Hy vọng tác giả giữ được phong cách này. 🎶"
+            },
+            {
+              "comment_id": "SYN_C0020299",
+              "video_id": "SYN_V0137",
+              "text_raw": "Bài này đang ở nhịp bốn hay có đoạn đổi sang nhịp khác vậy? Bật mức âm lượng vừa phải thì cảm nhận khác với nghe thật lớn. 🤔"
+            },
+            {
+              "comment_id": "SYN_C0026546",
+              "video_id": "SYN_V0366",
+              "text_raw": "Chỗ đổi nhịp có chủ ý không ad? Mình đang đếm nhịp để thử chơi lại đoạn đệm của ca khúc. Đang nghe cùng phần lời nên cũng chú ý cách kể chuyện hơn."
+            },
+            {
+              "comment_id": "SYN_C0013469",
+              "video_id": "SYN_V0165",
+              "text_raw": "Có ai thấy nhịp trống bị hụt không? 😔"
+            },
+            {
+              "comment_id": "SYN_C0022316",
+              "video_id": "SYN_V0341",
+              "text_raw": "Chỗ đổi nhịp có chủ ý không ad? beat này ổn áp đó! 👏"
+            }
+          ]
+        },
+        {
+          "cluster": 5,
+          "comments": 360,
+          "top_words": "lắm xong muộn hình_ảnh câu_chuyện lặp thoải_mái bố_cục kéo_dài nhàm hỗ_trợ kể theo_dõi quê chuyện",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0020662",
+              "video_id": "SYN_V0336",
+              "text_raw": "Bài nhạc: nghe xong mình muốn bật lại, bài nhạc tạo cảm giác rất thoải mái. Tui sẽ lưu lại để nghe tiếp. ✨"
+            },
+            {
+              "comment_id": "SYN_C0003924",
+              "video_id": "SYN_V0250",
+              "text_raw": "có lời bài hát không 🎧"
+            },
+            {
+              "comment_id": "SYN_C0026093",
+              "video_id": "SYN_V0338",
+              "text_raw": "Tui thích cách bài hát gợi hình ảnh quê nhà mà ko làm quá. Sáng nay mới nghe được trọn vẹn, trước đó toàn lướt qua. ✨"
+            },
+            {
+              "comment_id": "SYN_C0032645",
+              "video_id": "SYN_V0058",
+              "text_raw": "Ad có bản chỉ hình nền và nhạc không? Hình ảnh MV hỗ trợ câu chuyện của bài hát khá tốt, mình thấy rất hợp. Phần lời và phần nhạc cần nghe cùng nhau mới hiểu được ý."
+            },
+            {
+              "comment_id": "SYN_C0027301",
+              "video_id": "SYN_V0471",
+              "text_raw": "Cảnh này dùng công cụ nào vậy? Hình ảnh MV hỗ trợ câu chuyện của bài hát khá tốt, mình thấy rất hợp. Đi qua đoạn mở đầu rồi mới nhận ra điểm nhấn của bài. 👍"
+            }
+          ]
+        },
+        {
+          "cluster": 14,
+          "comments": 289,
+          "top_words": "xe trên buổi yên ngồi nhà mở da_gà nổi tối chú_ý nhỏ lần tai_nghe chi_tiết",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0039777",
+              "video_id": "SYN_V0054",
+              "text_raw": "Ad dùng giọng miền nào vậy? Tui thích cách nhả chữ trong bản này, lời Việt nghe mượt và rõ. Mở nhỏ vẫn cảm nhận được cách sắp xếp các lớp âm thanh. ✨"
+            },
+            {
+              "comment_id": "SYN_C0000661",
+              "video_id": "SYN_V0044",
+              "text_raw": "Ngồi trên xe nghe một lần, về nhà lại mở bằng tai nghe.\nMình thích cách người làm nhạc dùng AI hỗ trợ rồi tự chỉnh lại cho có cá tính. Làm tiếp những sản phẩm như vậy nhé. 🎶"
+            },
+            {
+              "comment_id": "SYN_C0032832",
+              "video_id": "SYN_V0069",
+              "text_raw": "Ngồi trên xe nghe một lần, về nhà lại mở bằng tai nghe. Mình thích chất lượng bản thu này vì không bị rè ở đoạn cao trào. 👏"
+            },
+            {
+              "comment_id": "SYN_C0036919",
+              "video_id": "SYN_V0468",
+              "text_raw": "Ngồi trên xe nghe một lần, về nhà lại mở bằng tai nghe. Tiếng đàn tranh hòa với giọng AI nghe duyên, vẫn giữ được màu sắc Việt. ✨"
+            },
+            {
+              "comment_id": "SYN_C0019974",
+              "video_id": "SYN_V0230",
+              "text_raw": "Mình thích lớp nhạc nền ở bản phối này, từng nhạc cụ có không gian riêng. Có thể thấy người làm đã dành công sức. Buổi tối ngồi yên nghe mới chú ý được các chi tiết nhỏ. ✨"
+            }
+          ]
+        },
+        {
+          "cluster": 0,
+          "comments": 287,
+          "top_words": "thuyết_phục mềm con_người rung rời_rạc bolero ấm sự tự_nhiên kết_hợp cứng máy xử_lý độ giữa",
+          "random_examples": [
+            {
+              "comment_id": "SYN_C0007292",
+              "video_id": "SYN_V0231",
+              "text_raw": "Giọng AI còn cứng và hơi giống máy, mình nghe chưa thấy tự nhiên. Rất mong tác giả thử một cách xử lý khác. Đọc lời trước rồi nghe lại thấy cách hiểu câu hát cũng thay đổi."
+            },
+            {
+              "comment_id": "SYN_C0000927",
+              "video_id": "SYN_V0404",
+              "text_raw": "Nửa đầu nghe qua loa, nửa sau mới tập trung lắng nghe. Mình chưa thấy sự sáng tạo vì bài này giống nhiều mẫu nhạc AI khác."
+            },
+            {
+              "comment_id": "SYN_C0018006",
+              "video_id": "SYN_V0107",
+              "text_raw": "Cách dùng ai: sự kết hợp giữa ý tưởng con người và công cụ AI ở bài này khá thuyết phục. Mình thấy đáng để dành thời gian lắng nghe. 🎶"
+            },
+            {
+              "comment_id": "SYN_C0015473",
+              "video_id": "SYN_V0054",
+              "text_raw": "Sự kết hợp giữa ý tưởng con người và công cụ AI ở bài này khá thuyết phục. Lần đầu chỉ nghe lướt, lần này bật lại mới để ý kỹ hơn. 👍"
+            },
+            {
+              "comment_id": "SYN_C0014079",
+              "video_id": "SYN_V0387",
+              "text_raw": "Giọng hát AI nghe mềm và khá tự nhiên, mình thích độ ấm của giọng này. Hy vọng tác giả giữ được phong cách này. Cách nghe bằng loa với cách nghe qua tai nghe đúng là không giống nhau. ❤️"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "model_parameters": {
+    "k": 20,
+    "alpha": 0.1,
+    "beta": 0.1,
+    "seed": 42,
+    "iterations": 30,
+    "min_word_freq": 2
+  },
+  "production_location_verified": false,
+  "audio_verified": false,
+  "limitation": "Metadata-only selection; synthetic models are diagnostic, not evidence about real audiences.",
+  "input_sha256_after": "13262dad632431c6c2947856095f115e7db466240a9271e45ce355e101721dd4",
+  "diagnostics": {
+    "real_k5": {
+      "source": "/workspace/Big-Data-YTB/data/source_comparison/real/topics/comments",
+      "seed": 42,
+      "k": 5,
+      "alpha": 0.1,
+      "beta": 0.1,
+      "iterations": 30,
+      "min_word_freq": 2,
+      "vi_heuristic": false,
+      "language_filter_method": "disabled",
+      "cap_per_video": null,
+      "funnel": {
+        "input": 596,
+        "modelable": 596,
+        "without_replies": 596,
+        "unique_text": 596,
+        "after_vi_heuristic": 596,
+        "after_video_cap": 596,
+        "training": 594
+      },
+      "vocabulary_size": 1310,
+      "active_topics": 5,
+      "videos": 146,
+      "top_video_fraction": 0.04040404040404041,
+      "top_10_video_fraction": 0.28619528619528617,
+      "history": [
+        {
+          "iteration": 1,
+          "moved": 430,
+          "active_topics": 5
+        },
+        {
+          "iteration": 2,
+          "moved": 197,
+          "active_topics": 5
+        },
+        {
+          "iteration": 3,
+          "moved": 161,
+          "active_topics": 5
+        },
+        {
+          "iteration": 4,
+          "moved": 129,
+          "active_topics": 5
+        },
+        {
+          "iteration": 5,
+          "moved": 93,
+          "active_topics": 5
+        },
+        {
+          "iteration": 6,
+          "moved": 73,
+          "active_topics": 5
+        },
+        {
+          "iteration": 7,
+          "moved": 84,
+          "active_topics": 5
+        },
+        {
+          "iteration": 8,
+          "moved": 87,
+          "active_topics": 5
+        },
+        {
+          "iteration": 9,
+          "moved": 82,
+          "active_topics": 5
+        },
+        {
+          "iteration": 10,
+          "moved": 70,
+          "active_topics": 5
+        },
+        {
+          "iteration": 11,
+          "moved": 59,
+          "active_topics": 5
+        },
+        {
+          "iteration": 12,
+          "moved": 66,
+          "active_topics": 5
+        },
+        {
+          "iteration": 13,
+          "moved": 66,
+          "active_topics": 5
+        },
+        {
+          "iteration": 14,
+          "moved": 68,
+          "active_topics": 5
+        },
+        {
+          "iteration": 15,
+          "moved": 77,
+          "active_topics": 5
+        },
+        {
+          "iteration": 16,
+          "moved": 62,
+          "active_topics": 5
+        },
+        {
+          "iteration": 17,
+          "moved": 63,
+          "active_topics": 5
+        },
+        {
+          "iteration": 18,
+          "moved": 68,
+          "active_topics": 5
+        },
+        {
+          "iteration": 19,
+          "moved": 71,
+          "active_topics": 5
+        },
+        {
+          "iteration": 20,
+          "moved": 66,
+          "active_topics": 5
+        },
+        {
+          "iteration": 21,
+          "moved": 76,
+          "active_topics": 5
+        },
+        {
+          "iteration": 22,
+          "moved": 57,
+          "active_topics": 5
+        },
+        {
+          "iteration": 23,
+          "moved": 61,
+          "active_topics": 5
+        },
+        {
+          "iteration": 24,
+          "moved": 54,
+          "active_topics": 5
+        },
+        {
+          "iteration": 25,
+          "moved": 62,
+          "active_topics": 5
+        },
+        {
+          "iteration": 26,
+          "moved": 55,
+          "active_topics": 5
+        },
+        {
+          "iteration": 27,
+          "moved": 55,
+          "active_topics": 5
+        },
+        {
+          "iteration": 28,
+          "moved": 53,
+          "active_topics": 5
+        },
+        {
+          "iteration": 29,
+          "moved": 65,
+          "active_topics": 5
+        },
+        {
+          "iteration": 30,
+          "moved": 60,
+          "active_topics": 5
+        }
+      ],
+      "upstream_language_filter": "Lingua VI confidence/margin; see real/summary.json and audit"
+    },
+    "description": "Exploratory smaller-K run because real K=20 has many tiny clusters; not a selected accuracy winner."
+  }
+}
