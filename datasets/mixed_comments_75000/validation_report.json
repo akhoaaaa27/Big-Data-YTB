@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "rows": 75000,
+  "columns": 18,
+  "composition": {
+    "real": 50000,
+    "synthetic": 25000
+  },
+  "csv_rows": 75000,
+  "original_core_schema_preserved": true,
+  "all_50000_real_dates_and_content_preserved": true,
+  "synthetic_content_and_ids_preserved": true,
+  "synthetic_date_days": 54,
+  "synthetic_min_rows_per_day": 462,
+  "synthetic_max_rows_per_day": 463,
+  "gsDMM_smoke": {
+    "iterations": 1,
+    "funnel": {
+      "input": 1000,
+      "modelable": 700,
+      "without_replies": 595,
+      "unique_text": 595,
+      "after_vi_heuristic": 544,
+      "after_video_cap": 544,
+      "training": 531
+    },
+    "active_topics": 20
+  }
+}
