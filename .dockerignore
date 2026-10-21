@@ -1,0 +1,13 @@
+# Không đưa dữ liệu và file nhạy cảm vào ngữ cảnh build image
+.git
+.env
+.env.*
+data/
+logs/
+config/
+*.csv
+*.json
+*.bak
+log.txt
+__pycache__/
+.vscode/

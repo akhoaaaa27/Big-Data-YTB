@@ -9,3 +9,17 @@
 *.json
 
 __pycache__/
+
+# Dữ liệu và file sinh ra khi chạy Airflow
+logs/
+config/
+log.txt
+
+# Dữ liệu: chỉ đưa lên GitHub tầng Core (đã làm sạch) và báo cáo chủ đề
+data/*
+!data/core/
+!data/topics/
+data/core/_building/
+data/core/*.old/
+*.crc
+_SUCCESS
