@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "csv_rows": 50000,
+  "parquet_rows": 50000,
+  "columns": 21,
+  "original_required_columns": 18,
+  "extra_columns": [
+    "is_synthetic",
+    "synthetic_aspect",
+    "synthetic_sentiment"
+  ],
+  "unique_ids": 50000,
+  "unique_clean_text": 50000,
+  "sentiment": {
+    "negative": 5000,
+    "positive": 35000,
+    "neutral": 10000
+  },
+  "actual_date_min": "2025-01-01",
+  "actual_date_max": "2026-10-20",
+  "distinct_days": 658,
+  "thread_graph": "validated_all_rows",
+  "gsDMM_smoke": {
+    "seed": 42,
+    "iterations": 1,
+    "funnel": {
+      "input": 1000,
+      "modelable": 1000,
+      "without_replies": 800,
+      "unique_text": 800,
+      "after_vi_heuristic": 800,
+      "after_video_cap": 800,
+      "training": 800
+    },
+    "active_topics": 20
+  }
+}
