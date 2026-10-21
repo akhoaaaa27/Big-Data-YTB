@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "rows": 73247,
+  "csv_rows": 73247,
+  "columns": 18,
+  "unique_ids": 73247,
+  "all_retained_values_identical_to_source": true,
+  "parquet_roundtrip_exact": true,
+  "source_parquet_sha256_unchanged": true,
+  "all_54_published_days_retained": true
+}
