@@ -3,23 +3,34 @@
 # Bỏ qua các file cấu hình của VS Code
 .vscode/
 
-# Bỏ qua tất cả các file dữ liệu CSV thu thập được
+# Bỏ qua tất cả các file dữ liệu CSV, bak, json thu thập được
 *.csv
 *.bak
 *.json
 
+# Python rác và môi trường ảo
 __pycache__/
+*.py[cod]
+.venv/
+venv/
 
 # Dữ liệu và file sinh ra khi chạy Airflow
 logs/
 config/
 log.txt
 
-# Dữ liệu: chỉ đưa lên GitHub tầng Core (đã làm sạch) và báo cáo chủ đề
+# Cấu hình chuẩn cho thư mục data của bạn:
+# 1. Chặn toàn bộ data (staging, state, legacy sẽ bị chặn sạch)
 data/*
+
+# 2. Mở chặn riêng cho thư mục core và tất cả tệp bên trong nó
 !data/core/
-!data/topics/
+!data/core/**
+
+# 3. Chặn các thư mục con hoặc file cụ thể không muốn lên trong core
 data/core/_building/
-data/core/*.old/
+data/core/*.old
+
+# Các file trạng thái, file rác hệ thống khác
 *.crc
 _SUCCESS

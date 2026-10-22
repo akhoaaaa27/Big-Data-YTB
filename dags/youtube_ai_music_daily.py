@@ -65,16 +65,23 @@ with DAG(
 
     @task
     def spark_business():
-        _placeholder("spark_business", "gán khía cạnh (GSDMM) và cảm xúc, ra tầng Business")
+        #_placeholder("spark_business", "gán khía cạnh (GSDMM) và cảm xúc, ra tầng Business")
+        from ytb.spark_business import run_business
 
+        return run_business() 
+    
     @task
     def spark_mart():
-        _placeholder("spark_mart", "tổng hợp theo video/thời gian/khía cạnh, ghi PostgreSQL (ytb_mart)")
+        #_placeholder("spark_mart", "tổng hợp theo video/thời gian/khía cạnh, ghi PostgreSQL (ytb_mart)")
+        from ytb.spark_mart import run_mart
 
+        return run_mart()
     @task
     def publish():
-        _placeholder("publish", "đẩy bảng Mart lên BigQuery cho Looker Studio")
+        #_placeholder("publish", "đẩy bảng Mart lên BigQuery cho Looker Studio")
+        from ytb.publish import run_publish
 
+        return run_publish()
     (
         discover_videos()
         >> snapshot_stats()
