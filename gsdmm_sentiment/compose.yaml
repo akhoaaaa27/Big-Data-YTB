@@ -1,0 +1,38 @@
+x-runtime: &runtime
+  user: "0:0"
+  working_dir: /opt/jobs
+  volumes:
+    - ./jobs:/opt/jobs:ro
+    - ./config:/opt/config:ro
+    - ../data:/opt/data
+
+services:
+  gsdmm:
+    <<: *runtime
+    image: gsdmm-local
+    build:
+      context: .
+      dockerfile: jobs/Dockerfile.gsdmm
+    entrypoint: ["python3", "-u", "/opt/jobs/gsdmm_train.py"]
+    command: ["42"]
+
+  aspects:
+    <<: *runtime
+    image: gsdmm-local
+    build:
+      context: .
+      dockerfile: jobs/Dockerfile.gsdmm
+    entrypoint: ["python3", "-u", "/opt/jobs/assign_aspects.py"]
+    command: []
+
+  sentiment:
+    <<: *runtime
+    image: sentiment-local
+    build:
+      context: .
+      dockerfile: jobs/Dockerfile.sentiment
+    environment:
+      HF_HOME: /opt/data/hf-cache
+      TOKENIZERS_PARALLELISM: "false"
+    entrypoint: ["python3", "-u", "/opt/jobs/predict_sentiment.py"]
+    command: []

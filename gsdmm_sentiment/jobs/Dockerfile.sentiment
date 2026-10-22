@@ -1,0 +1,15 @@
+FROM python:3.10-slim
+
+ENV PYTHONUNBUFFERED=1
+ENV HF_HOME=/opt/data/hf-cache
+ENV TOKENIZERS_PARALLELISM=false
+WORKDIR /opt/jobs
+RUN python -m pip install --no-cache-dir --upgrade pip setuptools wheel
+# Có PyPI cho dependency như flit_core; +cpu ngăn tải bản Torch CUDA.
+RUN python -m pip install --no-cache-dir torch==2.6.0+cpu \
+    --index-url https://download.pytorch.org/whl/cpu \
+    --extra-index-url https://pypi.org/simple
+COPY requirements/sentiment.txt /opt/requirements/sentiment.txt
+RUN python -m pip install --no-cache-dir -r /opt/requirements/sentiment.txt
+COPY jobs/ /opt/jobs/
+COPY config/ /opt/config/

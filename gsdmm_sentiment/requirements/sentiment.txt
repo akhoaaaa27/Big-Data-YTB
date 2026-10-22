@@ -1,0 +1,4 @@
+transformers==4.48.3
+sentencepiece==0.2.0
+protobuf==4.25.6
+pyarrow==25.0.1

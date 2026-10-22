@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.zip
+
+# Chỉ đưa khung thư mục lên GitHub; dữ liệu và model nằm trên máy chạy.
+data/**
+!data/README.md
+!data/silver/
+!data/silver/comments_clean/
+!data/silver/comments_clean/.gitkeep
+!data/gold/
+!data/gold/.gitkeep

@@ -1,0 +1,9 @@
+FROM python:3.10-slim
+
+ENV PYTHONUNBUFFERED=1
+WORKDIR /opt/jobs
+COPY requirements/gsdmm.txt /opt/requirements/gsdmm.txt
+RUN python -m pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && python -m pip install --no-cache-dir -r /opt/requirements/gsdmm.txt
+COPY jobs/ /opt/jobs/
+COPY config/ /opt/config/
