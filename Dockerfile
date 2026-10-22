@@ -12,3 +12,14 @@ USER airflow
 COPY requirements.txt /requirements.txt
 # Ghim "apache-airflow==3.3.2" để pip không nâng/hạ phiên bản Airflow khi cài thêm thư viện.
 RUN pip install --no-cache-dir "apache-airflow==3.3.2" -r /requirements.txt
+
+# GSDMM + aspect + sentiment chạy trực tiếp trong Airflow task.
+# Torch bản CPU để tránh tải CUDA vào image.
+USER root
+RUN python -m pip install --no-cache-dir torch==2.6.0+cpu \
+    --index-url https://download.pytorch.org/whl/cpu \
+    --extra-index-url https://pypi.org/simple
+USER airflow
+COPY gsdmm_sentiment/requirements/gsdmm.txt /tmp/gsdmm-requirements.txt
+COPY gsdmm_sentiment/requirements/sentiment.txt /tmp/sentiment-requirements.txt
+RUN pip install --no-cache-dir -r /tmp/gsdmm-requirements.txt -r /tmp/sentiment-requirements.txt
