@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import tempfile
 from pathlib import Path
 
 import pandas as pd
@@ -13,7 +14,11 @@ from . import config
 
 
 def build_silver() -> Path:
-    """Tạo Silver từ Core comments, không sửa Core và không ghi đè Silver cũ."""
+    """Tạo snapshot Silver mới nhất từ Core; Core không bị sửa.
+
+    Ghi ra file tạm rồi thay thế atomically để retry hằng ngày không bị chặn
+    bởi output của lần chạy trước và không để lại file Parquet ghi dở.
+    """
     import pyarrow.parquet as pq
 
     core_dir = config.DATA_DIR / "core" / "comments"
@@ -98,15 +103,19 @@ def build_silver() -> Path:
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Không ghi đè kết quả cũ.
-    if output_file.exists():
-        raise FileExistsError(
-            f"Silver đã tồn tại: {output_file}. "
-            "Hãy kiểm tra kết quả cũ trước khi chọn đường dẫn output mới."
-        )
+    # Tạo file mới trước, sau đó thay thế snapshot cũ trong một thao tác.
+    # Nếu ghi lỗi, snapshot Silver hiện tại vẫn còn nguyên.
+    with tempfile.NamedTemporaryFile(
+        prefix=".comments_clean-", suffix=".parquet.tmp", dir=output_dir, delete=False
+    ) as temp_file:
+        temp_path = Path(temp_file.name)
+    try:
+        df.to_parquet(temp_path, index=False, compression="zstd")
+        os.replace(temp_path, output_file)
+    finally:
+        temp_path.unlink(missing_ok=True)
 
-    df.to_parquet(output_file, index=False, compression="zstd")
-    print(f"Silver đã lưu: {output_file} ({len(df):,} dòng)")
+    print(f"Silver đã cập nhật: {output_file} ({len(df):,} dòng)")
     return output_file
 
 
@@ -181,13 +190,18 @@ def run_business() -> dict:
     business_dir.mkdir(parents=True, exist_ok=True)
     business_file = business_dir / "fact_comment_sentiment.parquet"
 
-    if business_file.exists():
-        raise FileExistsError(
-            f"Business đã tồn tại: {business_file}. "
-            "Không ghi đè dữ liệu của lần chạy trước."
-        )
-
-    pq.write_table(result, business_file, compression="zstd")
+    # Snapshot Business phản ánh đúng lần xử lý Silver hiện tại. Ghi file tạm
+    # rồi thay thế để retry không lỗi vì file cũ, đồng thời tránh Parquet dở dang.
+    with tempfile.NamedTemporaryFile(
+        prefix=".fact_comment_sentiment-", suffix=".parquet.tmp",
+        dir=business_dir, delete=False
+    ) as temp_file:
+        temp_path = Path(temp_file.name)
+    try:
+        pq.write_table(result, temp_path, compression="zstd")
+        os.replace(temp_path, business_file)
+    finally:
+        temp_path.unlink(missing_ok=True)
 
     return {
         "silver_file": str(silver_file),
