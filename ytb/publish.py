@@ -17,14 +17,20 @@ def run_publish() -> dict:
     project_id = os.getenv("BIGQUERY_PROJECT_ID")
     dataset_id = os.getenv("BIGQUERY_DATASET_ID")
 
-    # Cho phép pipeline hoàn thành trước khi nhóm thiết lập BigQuery.
-    if not project_id or not dataset_id:
-        message = (
-            "Skipped: chưa cấu hình BIGQUERY_PROJECT_ID và "
-            "BIGQUERY_DATASET_ID. Mart vẫn nằm trong PostgreSQL ytb_mart."
+    # Pipeline được yêu cầu chạy end-to-end. Không báo task xanh khi publish
+    # thực tế chưa chạy; cấu hình BigQuery trước khi bật DAG production.
+    missing_bq = [
+        name for name, value in {
+            "BIGQUERY_PROJECT_ID": project_id,
+            "BIGQUERY_DATASET_ID": dataset_id,
+        }.items() if not value
+    ]
+    if missing_bq:
+        raise RuntimeError(
+            "Chưa thể publish lên BigQuery; thiếu cấu hình: "
+            + ", ".join(missing_bq)
+            + ". Hãy cấu hình biến môi trường và credentials của Google Cloud."
         )
-        print(message)
-        return {"status": "skipped", "message": message}
 
     from google.cloud import bigquery
     import pandas as pd
