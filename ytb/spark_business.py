@@ -6,6 +6,7 @@ from __future__ import annotations
 import os
 import subprocess
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -121,10 +122,10 @@ def build_silver() -> Path:
 
 def run_gsdmm_steps() -> Path:
     """
-    Chạy bộ GSDMM bằng Docker Compose.
+    Chạy GSDMM -> aspect -> sentiment bằng các output riêng cho từng lần chạy.
 
-    YTB_GSDMM_COMPOSE_DIR phải trỏ đến thư mục gsdmm_sentiment
-    trong môi trường mà Docker CLI và Docker daemon đều truy cập được.
+    YTB_GSDMM_COMPOSE_DIR phải trỏ đến thư mục gsdmm_sentiment trong môi
+    trường Docker có thể truy cập Docker daemon và cùng volume data của dự án.
     """
     compose_dir = os.getenv("YTB_GSDMM_COMPOSE_DIR")
     if not compose_dir:
@@ -139,9 +140,16 @@ def run_gsdmm_steps() -> Path:
             f"Không tìm thấy compose.yaml trong {compose_path}"
         )
 
+    # Output duy nhất cho mỗi lần chạy, tránh đọc nhầm hoặc ghi đè kết quả hôm trước.
+    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    run_root = f"/opt/data/gold/runs/{run_id}"
+    gsdmm_dir = f"{run_root}/gsdmm"
+    aspects_dir = f"{run_root}/aspects"
+    sentiment_dir = f"{run_root}/sentiment"
+
     def run_compose(*args):
         command = ["docker", "compose", *args]
-        print("Running:", " ".join(command))
+        print("Running:", " ".join(command), flush=True)
         subprocess.run(
             command,
             cwd=compose_path,
@@ -149,12 +157,33 @@ def run_gsdmm_steps() -> Path:
             timeout=6 * 60 * 60,
         )
 
-    # Không build image ở mỗi lần chạy DAG; build riêng khi cập nhật code.
-    run_compose("run", "--rm", "gsdmm")
-    run_compose("run", "--rm", "aspects")
-    run_compose("run", "--rm", "sentiment")
+    # Chỉ chạy trên Silver hiện hành; mỗi bước nhận rõ input/output.
+    run_compose(
+        "run", "--rm", "gsdmm",
+        "--input", "/opt/data/silver/comments_clean/comments_clean.parquet",
+        "--output-dir", gsdmm_dir,
+        "--iterations", os.getenv("YTB_GSDMM_ITERATIONS", "30"),
+    )
+    run_compose(
+        "run", "--rm", "aspects",
+        "--input", f"{gsdmm_dir}/comments_clustered.parquet",
+        "--top-words", f"{gsdmm_dir}/cluster_top_words.csv",
+        "--output-dir", aspects_dir,
+        "--mapping", "/opt/config/cluster_aspects_seed42.json",
+    )
+    run_compose(
+        "run", "--rm", "sentiment",
+        "--input", f"{aspects_dir}/comments_with_aspects.parquet",
+        "--output-dir", sentiment_dir,
+    )
 
-    return config.DATA_DIR / "gold" / "sentiment_seed42" / "comments_sentiment.parquet"
+    result_file = Path(compose_dir).parent / "data" / "gold" / "runs" / run_id / "sentiment" / "comments_sentiment.parquet"
+    if not result_file.is_file():
+        raise FileNotFoundError(
+            f"GSDMM/Sentiment kết thúc nhưng không thấy output: {result_file}. "
+            "Kiểm tra volume data dùng chung giữa Airflow và Compose GSDMM."
+        )
+    return result_file
 
 
 def run_business() -> dict:
@@ -163,13 +192,16 @@ def run_business() -> dict:
     # Nếu bạn đã chạy GSDMM thủ công, có thể đặt YTB_SKIP_GSDMM=1
     # và sử dụng kết quả có sẵn; không chạy lại/ghi đè model.
     if os.getenv("YTB_SKIP_GSDMM", "0") == "1":
-        result_file = (
-            config.DATA_DIR / "gold" / "sentiment_seed42"
-            / "comments_sentiment.parquet"
-        )
+        configured_result = os.getenv("YTB_EXISTING_SENTIMENT_FILE")
+        if not configured_result:
+            raise RuntimeError(
+                "YTB_SKIP_GSDMM=1 yêu cầu YTB_EXISTING_SENTIMENT_FILE trỏ "
+                "đến đúng file sentiment đã kiểm tra; không tự lấy file cũ theo tên cố định."
+            )
+        result_file = Path(configured_result)
         if not result_file.is_file():
             raise FileNotFoundError(
-                f"Không tìm thấy kết quả sentiment có sẵn: {result_file}"
+                f"Không tìm thấy kết quả sentiment đã cấu hình: {result_file}"
             )
     else:
         result_file = run_gsdmm_steps()
