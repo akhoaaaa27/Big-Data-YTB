@@ -39,6 +39,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
     - ${AIRFLOW_PROJ_DIR:-.}/ytb:/opt/airflow/ytb
+    - /var/run/docker.sock:/var/run/docker.sock
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -186,6 +187,39 @@ services:
       _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_ADMIN_USER:-admin}
       _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:?Hãy đặt AIRFLOW_ADMIN_PASSWORD trong file .env}
     user: "0:0"
+
+  # Worker containers giữ sẵn các image ML riêng; Airflow gọi job qua Docker SDK.
+  # Dữ liệu được mount bởi Compose trên host để các container dùng cùng Parquet paths.
+  ytb-gsdmm-runner:
+    image: gsdmm-local
+    build:
+      context: ./gsdmm_sentiment
+      dockerfile: jobs/Dockerfile.gsdmm
+    container_name: ytb-gsdmm-runner
+    entrypoint: ["sh", "-c", "while true; do sleep 3600; done"]
+    working_dir: /opt/jobs
+    volumes:
+      - ./gsdmm_sentiment/jobs:/opt/jobs:ro
+      - ./gsdmm_sentiment/config:/opt/config:ro
+      - ./data:/opt/data
+    restart: unless-stopped
+
+  ytb-sentiment-runner:
+    image: sentiment-local
+    build:
+      context: ./gsdmm_sentiment
+      dockerfile: jobs/Dockerfile.sentiment
+    container_name: ytb-sentiment-runner
+    entrypoint: ["sh", "-c", "while true; do sleep 3600; done"]
+    working_dir: /opt/jobs
+    environment:
+      HF_HOME: /opt/data/hf-cache
+      TOKENIZERS_PARALLELISM: "false"
+    volumes:
+      - ./gsdmm_sentiment/jobs:/opt/jobs:ro
+      - ./gsdmm_sentiment/config:/opt/config:ro
+      - ./data:/opt/data
+    restart: unless-stopped
 
   # Dùng khi cần gõ lệnh Airflow:  docker compose --profile debug run --rm airflow-cli airflow dags list
   airflow-cli:
