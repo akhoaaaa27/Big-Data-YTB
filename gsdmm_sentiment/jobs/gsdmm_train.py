@@ -59,6 +59,16 @@ def main():
     raw = pd.concat([pd.read_parquet(path) for path in files], ignore_index=True)
     print(f"Đã đọc {len(files)} file Parquet, {len(raw):,} dòng.", flush=True)
     print("Các cột:", list(raw.columns), flush=True)
+
+    # Silver của pipeline chuẩn hóa văn bản thành text_clean/text_raw; bản
+    # GSDMM cũ lại yêu cầu cột text. Tạo alias tương thích, không ghi ngược
+    # hoặc sửa file Silver nguồn.
+    if "text" not in raw.columns:
+        if "text_clean" in raw.columns:
+            raw["text"] = raw["text_clean"]
+        elif "text_raw" in raw.columns:
+            raw["text"] = raw["text_raw"]
+
     missing = {"comment_id", "video_id", "text", "tokens"} - set(raw.columns)
     if missing:
         parser.error(f"Thiếu cột: {sorted(missing)}")

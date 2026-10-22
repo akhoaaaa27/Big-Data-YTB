@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "method": "provisional_cluster_level_mapping",
+  "cluster_words_signature": "2ddf87ad18bfbbec9bc7119ea11ff4e16863316bf6fca5e1c010033a8442dc24",
+  "reference_run": {
+    "seed": 42,
+    "rows": 34923,
+    "note": "Bảng tên cụm của lần chạy người dùng đã xem. Đổi dữ liệu hoặc train lại phải kiểm tra lại từ khóa và bình luận mẫu."
+  },
+  "cluster_aspects": {
+    "0": "Khác",
+    "1": "Khác",
+    "2": "Trải nghiệm nghe",
+    "3": "Khác",
+    "4": "Khác",
+    "5": "Khác",
+    "6": "Khác",
+    "7": "Chất lượng âm thanh",
+    "8": "Karaoke và tông giọng",
+    "9": "Phối khí và nhạc cụ",
+    "10": "Minh bạch và ghi công",
+    "11": "Phản hồi chung",
+    "12": "Quy trình và chỉnh sửa",
+    "13": "Lời bài hát và cảm xúc",
+    "14": "Sáng tạo và phong cách",
+    "15": "Khác",
+    "16": "Giai điệu",
+    "17": "Lời bài hát và cảm xúc",
+    "18": "Khác",
+    "19": "Nhịp điệu và cấu trúc"
+  }
+}
