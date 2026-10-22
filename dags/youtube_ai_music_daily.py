@@ -40,6 +40,13 @@ with DAG(
 ) as dag:
 
     @task
+    def validate_ml_runtime():
+        # Fail early if Docker Desktop/socket or dedicated ML runner containers are unavailable.
+        from ytb.ml_containers import check_ml_runtime
+
+        return check_ml_runtime()
+
+    @task
     def discover_videos():
         from ytb.discover import run_discover   # import trong task để lỗi thư viện không làm hỏng việc đọc DAG
 
@@ -83,7 +90,8 @@ with DAG(
 
         return run_publish()
     (
-        discover_videos()
+        validate_ml_runtime()
+        >> discover_videos()
         >> snapshot_stats()
         >> fetch_comments()
         >> spark_core()
