@@ -34,3 +34,41 @@ def run_ml_job(container_name: str, arguments: Sequence[str], timeout: int = 6 *
     finally:
         if client is not None:
             client.close()
+
+def check_ml_runtime() -> dict:
+    """Fail early if Airflow cannot access the Docker daemon or shared ML runners."""
+    client = None
+    try:
+        import docker
+
+        socket_url = os.getenv("DOCKER_HOST", "unix:///var/run/docker.sock")
+        client = docker.DockerClient(base_url=socket_url, timeout=15)
+        client.ping()
+        result = {}
+        for name in ("ytb-gsdmm-runner", "ytb-sentiment-runner"):
+            container = client.containers.get(name)
+            container.reload()
+            if container.status != "running":
+                container.start()
+                container.reload()
+            if container.status != "running":
+                raise RuntimeError(f"Container {name} chưa ở trạng thái running.")
+            mounts = {mount.get("Destination") for mount in (container.attrs.get("Mounts") or [])}
+            required_mounts = {"/opt/data", "/opt/jobs"}
+            missing = required_mounts - mounts
+            if missing:
+                raise RuntimeError(
+                    f"Container {name} thiếu mount {sorted(missing)}; "
+                    "kiểm tra docker-compose.yml và recreate runner."
+                )
+            result[name] = {"status": container.status, "mounts": sorted(mounts)}
+        return {"docker": "reachable", "runners": result}
+    except Exception as error:
+        raise RuntimeError(
+            "Kiểm tra môi trường ML thất bại. Hãy kiểm tra Docker Desktop đang chạy, "
+            "Docker socket mount và hai service runner trong docker-compose.yml. "
+            f"Chi tiết: {error}"
+        ) from error
+    finally:
+        if client is not None:
+            client.close()
