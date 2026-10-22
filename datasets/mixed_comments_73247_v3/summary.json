@@ -1,0 +1,58 @@
+{
+  "rows": 73247,
+  "columns": [
+    "comment_id",
+    "video_id",
+    "thread_id",
+    "parent_id",
+    "is_reply",
+    "author_channel_id",
+    "text_raw",
+    "text_clean",
+    "tokens",
+    "n_tokens",
+    "like_count",
+    "total_reply_count",
+    "source",
+    "published_at",
+    "updated_at",
+    "published_date",
+    "is_modelable",
+    "processed_at"
+  ],
+  "source_counts": {
+    "synthetic": 24438,
+    "api": 29268,
+    "legacy_csv": 19541
+  },
+  "synthetic_rows_with_remapped_ids": 24438,
+  "changed_columns": [
+    "comment_id",
+    "video_id",
+    "thread_id",
+    "parent_id",
+    "author_channel_id"
+  ],
+  "seed_method": "SHA256/ytb-simulation-id-v1",
+  "mapping_counts": {
+    "comment": 26871,
+    "video": 500,
+    "channel": 10431
+  },
+  "input_hashes_before": {
+    "comments": "13262dad632431c6c2947856095f115e7db466240a9271e45ce355e101721dd4",
+    "videos": {
+      "part-00000.parquet": "c82079a6770b5853833cbaffea25faece587f2bbb5f44a13e23b6a33013c33c9"
+    }
+  },
+  "input_hashes_after": {
+    "comments": "13262dad632431c6c2947856095f115e7db466240a9271e45ce355e101721dd4",
+    "videos": {
+      "part-00000.parquet": "c82079a6770b5853833cbaffea25faece587f2bbb5f44a13e23b6a33013c33c9"
+    }
+  },
+  "source_preserved": true,
+  "text_and_dates_preserved": true,
+  "identifiers_are_fictional": true,
+  "note": "Format-compatible simulation IDs, not verified YouTube entities. Original source values retained. Mapping report intentionally contains original SYN_ IDs."
+}

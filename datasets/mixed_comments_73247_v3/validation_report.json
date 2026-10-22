@@ -1,0 +1,29 @@
+{
+  "rows": 73247,
+  "columns": 18,
+  "real_rows_unchanged": 48809,
+  "synthetic_rows": 24438,
+  "schema_including_metadata_preserved": true,
+  "all_non_id_values_preserved": true,
+  "reverse_mapping_recovers_original_exactly": true,
+  "no_SYN_in_synthetic_ID_columns": true,
+  "changed_cells_by_column": {
+    "comment_id": 24438,
+    "video_id": 24438,
+    "thread_id": 24438,
+    "author_channel_id": 24438,
+    "parent_id": 4936
+  },
+  "unique_comment_ids": true,
+  "thread_and_parent_membership_preserved": true,
+  "synthetic_video_metadata_join_complete": true,
+  "video_metadata_only_IDs_changed": true,
+  "csv_matches_parquet": true,
+  "source_counts": {
+    "synthetic": 24438,
+    "api": 29268,
+    "legacy_csv": 19541
+  },
+  "no_collisions_with_real_core_ids": true,
+  "existing_output_rejected": true
+}
