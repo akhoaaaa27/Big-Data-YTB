@@ -33,6 +33,7 @@ SCHEMAS = {
         ("default_audio_language", pa.string()),
         ("duration", pa.string()),
         ("contains_synthetic_media", pa.bool_()),
+        ("is_ai_music", pa.bool_()),
         ("source", pa.string()),        # api | legacy_csv
         ("fetched_at", pa.string()),
     ]),
@@ -118,14 +119,16 @@ def known_video_ids() -> set[str]:
 
 
 def video_meta() -> dict[str, dict]:
-    """Mỗi video: published_at, keyword, và có đủ siêu dữ liệu mới (channel_id) hay chưa."""
-    cols = read_columns("videos", ["video_id", "keyword", "published_at", "channel_id"])
+    """Mỗi video: published_at, keyword, đã có siêu dữ liệu mới chưa, và có phải nhạc AI không."""
+    cols = read_columns("videos", ["video_id", "keyword", "published_at", "channel_id", "is_ai_music"])
     meta: dict[str, dict] = {}
-    for vid, kw, pub, ch in zip(cols["video_id"], cols["keyword"], cols["published_at"], cols["channel_id"]):
-        m = meta.setdefault(vid, {"keyword": None, "published_at": None, "complete": False})
+    for vid, kw, pub, ch, ok in zip(cols["video_id"], cols["keyword"], cols["published_at"],
+                                    cols["channel_id"], cols["is_ai_music"]):
+        m = meta.setdefault(vid, {"keyword": None, "published_at": None, "complete": False, "relevant": False})
         m["keyword"] = m["keyword"] or kw
         m["published_at"] = m["published_at"] or pub
         m["complete"] = m["complete"] or ch is not None
+        m["relevant"] = m["relevant"] or bool(ok)
     return meta
 
 

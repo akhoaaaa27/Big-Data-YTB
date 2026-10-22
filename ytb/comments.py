@@ -114,6 +114,8 @@ def select_videos(now: datetime, meta: dict, counts: dict, scans: dict) -> list[
     never, rescan = [], []
     today = now.date()
     for vid, m in meta.items():
+        if not m.get("relevant"):            # video không phải nhạc AI: khỏi tốn quota quét bình luận
+            continue
         cc = counts.get(vid)
         if cc is None:                       # chưa có snapshot (video không còn truy cập được)
             continue

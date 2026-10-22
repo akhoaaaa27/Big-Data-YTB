@@ -15,15 +15,17 @@ TIME_FMT = "%Y-%m-%dT%H:%M:%SZ"
 
 # ---- Tìm video (giữ nguyên như script cũ) ----
 KEYWORDS = [
-    "nhạc AI", "bài hát do AI sáng tác", "nhạc Suno AI",
-    "AI cover", "AI hát", "nhạc AI Việt Nam",
+    '"nhạc AI"', '"bài hát AI"', '"nhạc do AI sáng tác"', '"bài hát do AI tạo"',
+    '"nhạc AI Việt Nam"', "Suno nhạc Việt", "Suno AI bài hát", "Udio bài hát",
+    '"AI cover"', '"cover bằng AI"', '"giọng hát AI"', '"ca sĩ AI"',
+    '"AI trong âm nhạc"', "tranh cãi nhạc AI", '"nhạc AI" có hay không', "nhạc AI thay thế ca sĩ",
 ]
 VIDEOS_PER_KEYWORD = 50
 REGION_CODE = "VN"
 RELEVANCE_LANGUAGE = "vi"
 DAYS_BACK = 3                 # phần video mới (mỗi ngày)
-WINDOW_DAYS = 7               # độ dài mỗi cửa sổ lùi về quá khứ
-WINDOWS_PER_RUN = 5           # số cửa sổ quá khứ mỗi lần chạy
+WINDOW_DAYS = 30              # video nhạc AI thưa nên mỗi cửa sổ lùi một tháng
+WINDOWS_PER_RUN = 1          # số cửa sổ quá khứ mỗi lần chạy
 BACKFILL_STOP = datetime(2024, 1, 1, tzinfo=timezone.utc)
 
 # ---- Quét lại bình luận theo độ tuổi video (đề xuất của nhóm thảo luận, chỉnh được) ----
@@ -31,8 +33,8 @@ RESCAN_DAILY_MAX_AGE_DAYS = 30      # video <= 30 ngày tuổi: quét lại tố
 RESCAN_WEEKLY_MAX_AGE_DAYS = 90     # 30-90 ngày tuổi: quét lại tối đa mỗi tuần
 RESCAN_WEEKLY_INTERVAL_DAYS = 7     # video > 90 ngày tuổi: chỉ quét đầy đủ một lần
 
-# ---- Ngân sách quota mỗi lần chạy (mặc định YouTube: 10.000 units/ngày + 100 lượt search/ngày) ----
-# Mỗi lệnh list (commentThreads, comments, videos) tính 1 unit; search có bucket riêng.
-QUOTA_BUDGET_COMMENTS = int(os.getenv("YTB_QUOTA_BUDGET_COMMENTS", "8000"))
+# Mỗi lệnh search thật ra tốn 100 units trong chung 10.000 units/ngày (bạn nên tự kiểm tra lại trên Google Cloud).
+# 34 search x 100 = 3.400, + comments 5.100 + khác 500 = 9.000.
+QUOTA_BUDGET_COMMENTS = int(os.getenv("YTB_QUOTA_BUDGET_COMMENTS", "5100"))
 QUOTA_BUDGET_OTHER = int(os.getenv("YTB_QUOTA_BUDGET_OTHER", "500"))
-SEARCH_CALL_BUDGET = int(os.getenv("YTB_SEARCH_CALL_BUDGET", "60"))
+SEARCH_CALL_BUDGET = int(os.getenv("YTB_SEARCH_CALL_BUDGET", "34"))

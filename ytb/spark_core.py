@@ -93,6 +93,11 @@ def run_core(spark=None) -> dict:
                      .withColumn("_rn", F.row_number().over(latest))
                      .filter("_rn = 1").drop("_rn"))
 
+            vstg = _read_staging(spark, "videos")
+            if vstg is not None and "is_ai_music" in vstg.columns:
+                relevant = vstg.filter(F.col("is_ai_music")).select("video_id").distinct()
+                dedup = dedup.join(relevant, "video_id", "left_semi")   # chỉ giữ bình luận của video nhạc AI
+                
             out_type = T.StructType([
                 T.StructField("text_clean", T.StringType()),
                 T.StructField("tokens", T.ArrayType(T.StringType())),

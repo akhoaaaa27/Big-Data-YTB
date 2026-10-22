@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from . import config
 from .storage import iso, known_video_ids, load_state, parse_iso, save_state, write_rows
 from .youtube_client import Budget, BudgetExceeded, QuotaExhausted, build_client, call
+from .relevance import is_ai_music
 
 log = logging.getLogger(__name__)
 STATE_FILE = "backfill_state.json"   # cùng định dạng file cũ: {"next_before": "..."}
@@ -49,6 +50,8 @@ def video_row(item: dict, keyword: str | None, now: datetime, source: str = "api
         "default_audio_language": sn.get("defaultAudioLanguage"),
         "duration": item.get("contentDetails", {}).get("duration"),
         "contains_synthetic_media": item.get("status", {}).get("containsSyntheticMedia"),
+        "is_ai_music": is_ai_music(sn.get("title"), sn.get("description"), sn.get("tags"),
+                                   item.get("status", {}).get("containsSyntheticMedia")),
         "source": source,
         "fetched_at": iso(now),
     }
@@ -81,6 +84,7 @@ def run_discover(client=None, now: datetime | None = None, budget: Budget | None
 
     try:
         # A. Video đăng trong DAYS_BACK ngày gần nhất
+        _need_search_budget(budget)
         found = search_window(client, budget, now - timedelta(days=config.DAYS_BACK))
         summary["new_recent"] = store_new_videos(client, budget, found, known, now)
 
@@ -92,6 +96,7 @@ def run_discover(client=None, now: datetime | None = None, budget: Budget | None
                 log.info("Backfill đã chạm mốc %s", config.BACKFILL_STOP.date())
                 break
             start = max(cursor - timedelta(days=config.WINDOW_DAYS), config.BACKFILL_STOP)
+            _need_search_budget(budget)
             found = search_window(client, budget, start, cursor)
             summary["new_backfill"] += store_new_videos(client, budget, found, known, now)
             save_state(STATE_FILE, {"next_before": iso(start)})
@@ -108,3 +113,8 @@ def run_discover(client=None, now: datetime | None = None, budget: Budget | None
     summary["units_used"] = budget.units_used
     log.info("discover_videos: %s", summary)
     return summary
+
+def _need_search_budget(budget) -> None:
+    left = budget.search_limit - budget.search_used
+    if left < len(config.KEYWORDS):
+        raise BudgetExceeded(f"còn {left} lượt search, không đủ chạy hết {len(config.KEYWORDS)} từ khóa")
