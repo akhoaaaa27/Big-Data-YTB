@@ -34,3 +34,7 @@ data/core/*.old
 # Các file trạng thái, file rác hệ thống khác
 *.crc
 _SUCCESS
+
+# GSDMM config cần được version-control (mapping nhãn đã review, không chứa secret).
+!gsdmm_sentiment/config/
+!gsdmm_sentiment/config/*.json
