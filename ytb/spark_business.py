@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -121,78 +122,76 @@ def build_silver() -> Path:
 
 def run_gsdmm_steps() -> Path:
     """
-    Tạo kết quả trong thư mục tạm của một lần chạy. Chỉ sau khi cả GSDMM,
-    Aspect và Sentiment thành công mới promote sang các đường dẫn Gold cố định.
+    Chạy GSDMM → Aspect → Sentiment ngay trong task Airflow, không cần Docker
+    socket/CLI bên trong container. Chỉ promote snapshot khi cả ba bước thành công.
     """
     import shutil
     from datetime import datetime, timezone
 
-    compose_dir = os.getenv("YTB_GSDMM_COMPOSE_DIR")
-    if not compose_dir:
-        raise RuntimeError(
-            "Chưa cấu hình YTB_GSDMM_COMPOSE_DIR. "
-            "Không thể chạy GSDMM tự động từ Airflow."
-        )
+    jobs_dir = Path("/opt/airflow/gsdmm_sentiment/jobs")
+    config_dir = Path("/opt/airflow/gsdmm_sentiment/config")
+    gsdmm_script = jobs_dir / "gsdmm_train.py"
+    aspects_script = jobs_dir / "assign_aspects.py"
+    sentiment_script = jobs_dir / "predict_sentiment.py"
+    mapping_file = config_dir / "cluster_aspects_seed42.json"
+    for required_path in (gsdmm_script, aspects_script, sentiment_script, mapping_file):
+        if not required_path.is_file():
+            raise FileNotFoundError(
+                f"Thiếu file GSDMM trong Airflow container: {required_path}. "
+                "Kiểm tra volume gsdmm_sentiment trong docker-compose.yml."
+            )
 
-    compose_path = Path(compose_dir)
-    if not (compose_path / "compose.yaml").is_file():
-        raise FileNotFoundError(f"Không tìm thấy compose.yaml trong {compose_path}")
+    silver_file = config.DATA_DIR / "silver" / "comments_clean" / "comments_clean.parquet"
+    if not silver_file.is_file():
+        raise FileNotFoundError(f"Không thấy Silver đầu vào: {silver_file}")
 
-    # config.DATA_DIR và ../data trong compose.yaml phải trỏ tới cùng volume dữ liệu.
-    # Nếu không, bước xác minh bên dưới sẽ fail closed thay vì publish nhầm output.
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     work_root = config.DATA_DIR / "gold" / "_building" / run_id
     gsdmm_work = work_root / "gsdmm"
     aspects_work = work_root / "aspects"
     sentiment_work = work_root / "sentiment"
-
-    def container_path(path: Path) -> str:
-        # Compose mount ../data thành /opt/data.
-        relative = path.relative_to(config.DATA_DIR)
-        return str(Path("/opt/data") / relative)
-
-    def run_compose(*args):
-        command = ["docker", "compose", *args]
-        print("Running:", " ".join(command), flush=True)
-        subprocess.run(command, cwd=compose_path, check=True, timeout=6 * 60 * 60)
-
     work_root.mkdir(parents=True, exist_ok=False)
+
+    def run_job(*args):
+        command = [sys.executable, "-u", *map(str, args)]
+        print("Running job:", " ".join(command), flush=True)
+        subprocess.run(command, check=True, timeout=6 * 60 * 60)
+
     try:
-        run_compose(
-            "run", "--rm", "gsdmm",
-            "--input", "/opt/data/silver/comments_clean/comments_clean.parquet",
-            "--output-dir", container_path(gsdmm_work),
+        run_job(
+            gsdmm_script, "42",
+            "--input", silver_file,
+            "--output-dir", gsdmm_work,
             "--iterations", os.getenv("YTB_GSDMM_ITERATIONS", "30"),
         )
         clustered = gsdmm_work / "comments_clustered.parquet"
         top_words = gsdmm_work / "cluster_top_words.csv"
         if not clustered.is_file() or not top_words.is_file():
-            raise FileNotFoundError(
-                "Không thấy output GSDMM trên volume của Airflow. "
-                "Kiểm tra mapping data/ giữa Airflow và gsdmm_sentiment/compose.yaml."
-            )
+            raise FileNotFoundError("GSDMM kết thúc nhưng thiếu Parquet hoặc cluster_top_words.csv.")
 
-        run_compose(
-            "run", "--rm", "aspects",
-            "--input", container_path(clustered),
-            "--top-words", container_path(top_words),
-            "--output-dir", container_path(aspects_work),
-            "--mapping", "/opt/config/cluster_aspects_seed42.json",
+        run_job(
+            aspects_script,
+            "--input", clustered,
+            "--top-words", top_words,
+            "--output-dir", aspects_work,
+            "--mapping", mapping_file,
         )
         aspect_file = aspects_work / "comments_with_aspects.parquet"
         if not aspect_file.is_file():
             raise FileNotFoundError(f"Không thấy output Aspect: {aspect_file}")
 
-        run_compose(
-            "run", "--rm", "sentiment",
-            "--input", container_path(aspect_file),
-            "--output-dir", container_path(sentiment_work),
+        run_job(
+            sentiment_script,
+            "--input", aspect_file,
+            "--output-dir", sentiment_work,
+            "--batch-size", os.getenv("YTB_SENTIMENT_BATCH_SIZE", "16"),
+            "--cpu-threads", os.getenv("YTB_SENTIMENT_CPU_THREADS", "4"),
+            "--device", "cpu",
         )
         sentiment_file = sentiment_work / "comments_sentiment.parquet"
         if not sentiment_file.is_file():
             raise FileNotFoundError(f"Không thấy output Sentiment: {sentiment_file}")
 
-        # Validate schema trước khi promote snapshot hiện hành.
         import pyarrow.parquet as pq
         table = pq.read_table(sentiment_file)
         required = {"comment_id", "video_id", "cluster", "aspect", "sentiment"}
@@ -205,8 +204,6 @@ def run_gsdmm_steps() -> Path:
         if any(not value for value in ids) or len(ids) != len(set(ids)):
             raise ValueError("Sentiment có comment_id rỗng hoặc trùng.")
 
-        # Các thư mục làm việc nằm cùng filesystem với các output cố định.
-        # Giữ bản cũ đến khi thư mục mới đã sẵn sàng; rollback nếu promote lỗi.
         promotions = [
             (gsdmm_work, config.DATA_DIR / "gold" / "gsdmm_current"),
             (aspects_work, config.DATA_DIR / "gold" / "aspects_seed42"),
