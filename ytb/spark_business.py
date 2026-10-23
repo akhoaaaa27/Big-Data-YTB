@@ -219,7 +219,16 @@ def run_gsdmm_steps() -> Path:
         final_file = config.DATA_DIR / "gold" / "sentiment_seed42" / "comments_sentiment.parquet"
         print(f"Đã cập nhật Gold hiện hành: {final_file} ({table.num_rows:,} dòng)", flush=True)
         return final_file
-    finally:
+    except Exception:
+        # Giữ nguyên artifacts của lần chạy lỗi để có thể kiểm tra cluster_top_words.csv
+        # và lập mapping đúng; không xóa bằng chứng khiến lỗi signature khó chẩn đoán.
+        print(
+            f"GSDMM pipeline thất bại. Giữ artifacts để debug tại: {work_root}",
+            flush=True,
+        )
+        raise
+    else:
+        # Chỉ dọn thư mục staging sau khi đã promote thành công toàn bộ output.
         if work_root.exists():
             shutil.rmtree(work_root, ignore_errors=True)
 
