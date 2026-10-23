@@ -30,7 +30,18 @@ def read_words(words_path):
     if any(row["cluster"] < 0 or row["so_binh_luan"] < 1 for row in rows):
         raise ValueError("cluster >= 0 và so_binh_luan >= 1")
     rows.sort(key=lambda row: row["cluster"])
-    payload = json.dumps(rows, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    # Chỉ đưa mã cụm và top_words vào chữ ký.
+    # so_binh_luan thay đổi theo dữ liệu mỗi ngày, không nên làm mapping mất hiệu lực.
+    signature_rows = [
+        {"cluster": row["cluster"], "top_words": row["top_words"]}
+        for row in rows
+    ]
+    payload = json.dumps(
+        signature_rows,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
     return rows, hashlib.sha256(payload).hexdigest()
 
 

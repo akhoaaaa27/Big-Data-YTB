@@ -58,6 +58,9 @@ def run_mart() -> dict:
 
     if df["comment_id"].duplicated().any():
         raise ValueError("Business có comment_id trùng; dừng nạp Mart.")
+    
+    if df.empty: 
+        raise ValueError("Business rỗng; không thay thế PostgreSQL.") 
 
     # Chỉ nạp các cột đã xác định schema, tránh tự tạo cột SQL không kiểm soát.
     allowed = [
@@ -65,8 +68,8 @@ def run_mart() -> dict:
         "sentiment_score", "sentiment_negative", "sentiment_neutral",
         "sentiment_positive", "published", "likes", "text",
     ]
-    columns = [c for c in allowed if c in df.columns]
-    records = df[columns].where(pd.notna(df[columns]), None).to_dict("records")
+    data = df.reindex(columns=allowed).astype(object) 
+    records = data.where(pd.notna(data), None).to_dict("records") 
 
     conn = _connect()
     try:
@@ -89,10 +92,15 @@ def run_mart() -> dict:
                         loaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                     )
                 """)
+                cur.execute(""" 
+                    CREATE TEMP TABLE incoming_comment_sentiment 
+                    (LIKE fact_comment_sentiment INCLUDING ALL) 
+                    ON COMMIT DROP 
+                """)
 
                 # Nạp theo lô và cập nhật những comment đã tồn tại.
                 sql = """
-                    INSERT INTO fact_comment_sentiment (
+                    INSERT INTO incoming_comment_sentiment (
                         comment_id, video_id, cluster, aspect, sentiment,
                         sentiment_score, sentiment_negative,
                         sentiment_neutral, sentiment_positive,
@@ -119,11 +127,26 @@ def run_mart() -> dict:
                         text = EXCLUDED.text,
                         loaded_at = NOW()
                 """
-
                 if records:
                     psycopg2.extras.execute_batch(
                         cur, sql, records, page_size=1000
                     )
+
+                cur.execute(
+                    "SELECT COUNT(*) FROM incoming_comment_sentiment"
+                )
+                staged_rows = cur.fetchone()[0]
+
+                if staged_rows != len(df):
+                    raise RuntimeError(
+                        f"Số dòng không khớp: Business={len(df)}, "
+                        f"records={len(records)}, bảng tạm={staged_rows}"
+                    ) 
+                cur.execute("DELETE FROM fact_comment_sentiment") 
+                cur.execute(""" 
+                    INSERT INTO fact_comment_sentiment 
+                    SELECT * FROM incoming_comment_sentiment 
+                """)
 
                 cur.execute("""
                     CREATE TABLE IF NOT EXISTS agg_aspect_sentiment (

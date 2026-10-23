@@ -1,3 +1,8 @@
+import argparse
+import os
+import sys
+from pathlib import Path
+
 import re
 import unicodedata
 
@@ -47,89 +52,142 @@ def off_topic_reason(value):
         return "the_thao"
     return None
 
-spark = SparkSession.builder.appName("ai-music-comments").getOrCreate()
+def run_clean(input_path, output_dir, audit_dir, spark=None): 
+    input_path, output_dir, audit_dir = map(Path, (input_path, output_dir, audit_dir)) 
+    for destination in (output_dir, audit_dir): 
+        src, dst = input_path.resolve(), destination.resolve() 
+        if src == dst or src in dst.parents or dst in src.parents: 
+            raise ValueError("Đầu vào và đầu ra phải tách biệt.") 
+    out, audit = output_dir.resolve(), audit_dir.resolve() 
+    if out == audit or out in audit.parents or audit in out.parents: 
+        raise ValueError("Silver và báo cáo loại phải tách biệt.") 
+    own_spark = spark is None 
+    if own_spark: 
+        os.environ.setdefault("PYSPARK_PYTHON", sys.executable) 
+        os.environ.setdefault("PYSPARK_DRIVER_PYTHON", sys.executable) 
+        spark = ( 
+                SparkSession.builder.appName("ai-music-comments") 
+                .master(os.getenv("YTB_SPARK_MASTER", "local[2]")) 
+                .config("spark.sql.session.timeZone", "UTC") 
+                .config("spark.ui.enabled", "false") 
+                .getOrCreate() 
+                ) 
+        
+    tagged = None 
+    try: 
+        raw = spark.read.parquet(str(input_path)) 
+        print("Cột gốc:", raw.columns) 
+        print("Số dòng ban đầu:", raw.count()) 
+        df = ( 
+                raw.withColumnRenamed("text_raw", "text") 
+                .withColumnRenamed("like_count", "likes") 
+                .withColumnRenamed("author_channel_id", "author") ) 
+        if "published" not in df.columns:
+            if "published_date" in df.columns:
+                df = df.withColumnRenamed("published_date", "published")
+            elif "published_at" in df.columns:
+                df = df.withColumnRenamed("published_at", "published")
 
-raw = spark.read.parquet("/opt/data/raw/test.parquet")
-print("Cột gốc:", raw.columns)
-print("Số dòng ban đầu:", raw.count())
+        required = {
+                "comment_id",
+                "video_id",
+                "author",
+                "text",
+                "likes",
+                "published",
+                "is_reply",
+                "tokens",
+                }
 
-# 0. Đổi tên cột về tên chuẩn, giữ nguyên tokens gốc
-#    (dùng published_date vì published_at bị lỗi kiểu INT64 khi Spark đọc)
-df = (raw.withColumnRenamed("text_raw", "text")
-         .withColumnRenamed("like_count", "likes")
-         .withColumnRenamed("published_date", "published")
-         .withColumnRenamed("author_channel_id", "author")
-         .select("comment_id", "video_id", "author", "text", "likes", "published",
-                 "is_reply", "source", "tokens"))
+        missing = required - set(df.columns)
+        if missing:
+            raise ValueError(f"Thiếu cột đầu vào: {sorted(missing)}")
 
-# 1. Kiểu dữ liệu; tạo cờ dữ liệu mô phỏng rồi bỏ cột source
-df = (df.withColumn("published", F.to_timestamp("published"))
-        .withColumn("likes", F.col("likes").cast("int"))
-        .fillna({"likes": 0})
-        .withColumn("is_synth", F.col("source") == "synthetic")
-        .drop("source"))
+        df = df.select(*sorted(required)) 
+        df = ( 
+                    df.withColumn("published", F.to_timestamp("published")) 
+                    .withColumn("likes", F.col("likes").cast("int")) 
+                    .fillna({"likes": 0}) 
+                    .filter(~F.coalesce(F.col("is_reply"), F.lit(False))) 
+                    .filter(F.col("text").isNotNull() & F.col("tokens").isNotNull()) 
+                    .filter(F.col("comment_id").isNotNull() & F.col("video_id").isNotNull()) 
+                    .filter((F.length(F.trim("comment_id")) > 0) & (F.length(F.trim("video_id")) > 0)) 
+                    .dropDuplicates(["comment_id"]) 
+                    .drop("is_reply") ) 
+                
+        print("Sau khi bỏ reply/rỗng/trùng ID:", df.count()) 
+                
+        df = ( 
+                    df.withColumn("text_clean", F.lower("text")) 
+                    .withColumn("text_clean", F.regexp_replace("text_clean", r"https?://\S+", " ")) 
+                    .withColumn("text_clean", F.regexp_replace("text_clean", r"(.)\1{2,}", "$1")) 
+                    .withColumn("text_clean", F.regexp_replace("text_clean", r"\s+", " ")) 
+                    .withColumn("text_clean", F.trim("text_clean")) ) 
+                
+        vi_chars = "[ăơưđạảấầẩẫậắằẳẵặẹẻẽếềểễệịỉĩọỏốồổỗộớờởỡợụủũứừửữựỳỵỷỹ]" 
+        vi_words = ( 
+                r"(?<!\p{L})(không|của|và|là|này|rất|quá|bài|nghe|giọng|nhạc|được|" 
+                r"nhưng|chị|mình|bạn)(?!\p{L})" ) 
+                
+        math = ( 
+                r"[²³⁴√∑∫≈≠≤≥]|\^\d|chu vi|diện tích|lập phương|bình phương|đẳng thức|" 
+                r"phương trình|căn bậc|đạo hàm|tích phân|bài toán|giải toán" ) 
+                
+        df = ( 
+                df.withColumn("is_vi", F.col("text_clean").rlike(vi_chars) | F.col("text_clean").rlike(vi_words)) 
+                .withColumn("is_toan", F.col("text_clean").rlike(math)) )
 
-# 2. Bỏ bình luận trả lời, rỗng, trùng id, thiếu tokens
-df = (df.filter(~F.coalesce(F.col("is_reply"), F.lit(False)))
-        .filter(F.col("text").isNotNull() & F.col("tokens").isNotNull())
-        .dropDuplicates(["comment_id"])
-        .drop("is_reply"))
-print("Sau khi bỏ reply, rỗng, trùng id:", df.count())
-df.groupBy("is_synth").count().show()
-
-# 3. Chuẩn hóa văn bản (dùng để lọc ngôn ngữ và cho sentiment)
-df = (df.withColumn("text_clean", F.lower(F.col("text")))
-        .withColumn("text_clean", F.regexp_replace("text_clean", r"https?://\S+", " "))
-        .withColumn("text_clean", F.regexp_replace("text_clean", r"(.)\1{2,}", "$1"))
-        .withColumn("text_clean", F.regexp_replace("text_clean", r"\s+", " "))
-        .withColumn("text_clean", F.trim("text_clean")))
-
-# 4. Lọc tiếng nước ngoài, toán
-VI_ONLY = "[ăơưđạảấầẩẫậắằẳẵặẹẻẽếềểễệịỉĩọỏốồổỗộớờởỡợụủũứừửữựỳỵỷỹ]"
-VI_WORDS = (r"(?<!\p{L})(không|của|và|là|này|rất|quá|bài|nghe|giọng|nhạc|được|"
-            r"nhưng|chị|mình|bạn)(?!\p{L})")
-TOAN = (r"[²³⁴√∑∫≈≠≤≥]|\^\d|chu vi|diện tích|lập phương|bình phương|đẳng thức|"
-        r"phương trình|căn bậc|đạo hàm|tích phân|bài toán|giải toán")
-
-df = (df.withColumn("is_vi", F.col("text_clean").rlike(VI_ONLY) | F.col("text_clean").rlike(VI_WORDS))
-        .withColumn("is_toan", F.col("text_clean").rlike(TOAN)))
-
-print("Không phải tiếng Việt:", df.filter(~F.col("is_vi")).count())
-print("Toán:", df.filter(F.col("is_vi") & F.col("is_toan")).count())
-
-df_vi = df.filter(F.col("is_vi") & ~F.col("is_toan")
-                  & (F.size(F.split("text_clean", " ")) >= 3))
-print("Sau lọc ngôn ngữ/toán/độ dài:", df_vi.count())
-
-# 5. Bỏ trùng bình luận dài (lời bài hát dán lại), giữ bình luận ngắn lặp lại
-df_vi = df_vi.withColumn("n_words", F.size(F.split("text_clean", " ")))
-long_c = df_vi.filter("n_words >= 8").dropDuplicates(["text_clean"])
-short_c = df_vi.filter("n_words < 8")
-df_vi = short_c.unionByName(long_c).drop("n_words")
-
-# 6. Lọc lạc đề theo cụm từ gợi ý từ GSDMM; giữ nguyên nội dung và tokens.
-# Đây là heuristic giảm nhiễu, không xác minh video/âm thanh có phải nhạc AI.
-classify_offtopic = F.udf(off_topic_reason, T.StringType())
-tagged = df_vi.withColumn("_off_topic_reason", classify_offtopic(F.col("text"))).cache()
-try:
-    n_before = tagged.count()
-    removed = tagged.filter(F.col("_off_topic_reason").isNotNull())
-    n_removed = removed.count()
-    print("Trước lọc lạc đề:", n_before)
-    print("Loại do lạc đề:", n_removed)
-    print("Giữ lại sau lọc lạc đề:", n_before - n_removed)
-    removed.groupBy("_off_topic_reason").count().orderBy(F.desc("count")).show(truncate=False)
-    # Báo cáo riêng để kiểm tra dòng bị loại; không thêm cột vào Silver chính.
-    removed.select("comment_id", "video_id", "text", "_off_topic_reason").write.mode("overwrite").parquet(
-        "/opt/data/gold/comments_removed_offtopic"
-    )
-    df_vi = tagged.filter(F.col("_off_topic_reason").isNull()).drop("_off_topic_reason")
-    df_vi = df_vi.drop("text_clean", "is_vi", "is_toan", "is_synth")
-    print("Số dòng sau khi lọc:", n_before - n_removed)
-    df_vi.coalesce(1).write.mode("overwrite").parquet(
-        "/opt/data/silver/comments_clean"
-    )
-finally:
-    tagged.unpersist()
-    spark.stop()
-
+        print("Không phải tiếng Việt:", df.filter(~F.col("is_vi")).count()) 
+                
+        print("Toán:", df.filter(F.col("is_vi") & F.col("is_toan")).count()) 
+        df = df.filter( 
+                    F.col("is_vi") & ~F.col("is_toan") 
+                    & (F.size(F.split("text_clean", " ")) >= 3) ) 
+                
+        print("Sau lọc ngôn ngữ/toán/độ dài:", df.count()) 
+                
+        df = df.withColumn("n_words", F.size(F.split("text_clean", " "))) 
+        short = df.filter("n_words < 8") 
+        long = df.filter("n_words >= 8").dropDuplicates(["text_clean"]) 
+        df = short.unionByName(long).drop("n_words") 
+        tagged = df.withColumn( 
+                    "_off_topic_reason", F.udf(off_topic_reason, T.StringType())("text") 
+                    ).cache() 
+                
+        before = tagged.count() 
+        removed = tagged.filter(F.col("_off_topic_reason").isNotNull()) 
+        n_removed = removed.count() 
+                
+        print("Trước lọc lạc đề:", before) 
+        print("Loại do lạc đề:", n_removed) 
+        print("Giữ lại:", before - n_removed) 
+                
+        if before - n_removed <= 0: 
+            raise ValueError("Không còn bình luận; không xuất Silver rỗng.") 
+        removed.groupBy("_off_topic_reason").count().show(truncate=False) 
+        removed.select( 
+                    "comment_id", "video_id", 
+                    "text", "_off_topic_reason" ).write.mode("overwrite").parquet(str(audit_dir)) 
+                
+        kept = tagged.filter(
+                    F.col("_off_topic_reason").isNull()).select( 
+                        "comment_id", "video_id", "author", "text", 
+                        "likes", "published", "tokens" 
+                        ) 
+                
+        kept.coalesce(1).write.mode("overwrite").parquet(str(output_dir)) 
+                
+        return output_dir 
+    finally: 
+        if tagged is not None: 
+            tagged.unpersist() 
+        if own_spark: 
+            spark.stop() 
+                
+if __name__ == "__main__": 
+    parser = argparse.ArgumentParser() 
+    parser.add_argument("--input", required=True) 
+    parser.add_argument("--output", required=True) 
+    parser.add_argument("--audit", required=True) 
+    args = parser.parse_args() 
+    run_clean(args.input, args.output, args.audit)

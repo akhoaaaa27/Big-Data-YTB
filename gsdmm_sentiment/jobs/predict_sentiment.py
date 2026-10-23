@@ -187,6 +187,12 @@ def predict(source, output, *, model_name=MODEL, revision="main", batch_size=16,
         (temp / "sentiment_summary.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
         if output.exists():
             raise FileExistsError(output)
+        # Cho phép Airflow đọc kết quả do container sentiment tạo.
+        for file in temp.iterdir():
+            if file.is_file():
+                file.chmod(0o644)
+
+        temp.chmod(0o755)
         temp.rename(output)
     finally:
         if temp.exists():

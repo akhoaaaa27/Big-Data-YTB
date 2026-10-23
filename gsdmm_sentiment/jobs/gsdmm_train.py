@@ -3,6 +3,8 @@
 import argparse
 import json
 import re
+import hashlib
+import tempfile 
 from collections import Counter
 from pathlib import Path
 
@@ -32,14 +34,216 @@ def clean_for_dedup(value):
     value = re.sub(r"(.)\1{2,}", r"\1", value)
     return re.sub(r"\s+", " ", value).strip()
 
+FIXED_FILES = ( 
+    "gsdmm_model.npz", "cluster_top_words.csv", 
+    "cluster_aspects.json", "reviewed/comments_with_aspects.parquet", ) 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("seed", nargs="?", type=int, default=42)
-    parser.add_argument("--input", type=Path, default=Path("/opt/data/silver/comments_clean"))
-    parser.add_argument("--output-dir", type=Path, default=Path("/opt/data/gold"))
-    parser.add_argument("--iterations", type=int, default=30)
-    args = parser.parse_args()
+def file_sha256(path): 
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest() 
+
+def load_fixed_package(folder): 
+    if __package__: 
+        from .assign_aspects import read_words, load_mapping 
+    else: 
+        from assign_aspects import read_words, load_mapping 
+        
+    folder = Path(folder) 
+    with np.load(folder / FIXED_FILES[0], allow_pickle=False) as saved: 
+        m, n, nkw = (saved[name].copy() for name in ("m", "n", "nkw")) 
+        words = saved["vocab"].tolist() 
+        alpha, beta = float(saved["alpha"]), float(saved["beta"]) 
+    
+    if ( 
+        m.ndim != 1 or n.shape != m.shape 
+        or nkw.shape != (len(m), len(words)) 
+        or len(set(words)) != len(words) or not words 
+        or not all(np.isfinite(a).all() and (a >= 0).all() for a in (m, n, nkw)) 
+        or not np.array_equal(nkw.sum(axis=1), n) 
+        or not np.isfinite([alpha, beta]).all() or min(alpha, beta) <= 0 ): 
+        
+        raise ValueError("Thông số model không hợp lệ.") 
+    
+    active = np.flatnonzero(m > 0) 
+    rows, signature = read_words(folder / FIXED_FILES[1]) 
+    labels = load_mapping(folder / FIXED_FILES[2], signature, active.tolist()) 
+    if {r["cluster"]: r["so_binh_luan"] for r in rows} != { int(k): 
+        int(m[k]) for k in active 
+    }: 
+        raise ValueError("Model và bảng từ khóa không cùng lần train.") 
+    
+    for row in rows: 
+        k = row["cluster"] 
+        score = (nkw[k] / (nkw.sum(axis=0) + 1)) * np.log1p(nkw[k]) 
+        top = [words[i] for i in np.argsort(-score, kind="stable") if nkw[k, i] > 0][:15] 
+        if " ".join(top) != row["top_words"]: 
+            raise ValueError("Từ khóa không khớp model.") 
+        
+    reference = pd.read_parquet(folder / FIXED_FILES[3]) 
+    required = {"comment_id", "video_id", "text", "tokens", "cluster", "aspect"} 
+    if not required <= set(reference.columns): 
+        raise ValueError("Thiếu cột trong kết quả train ban đầu.") 
+    
+    if ( 
+        reference["comment_id"].isna().any() 
+        or reference["comment_id"].astype(str).str.strip().eq("").any() 
+        or reference["comment_id"].duplicated().any() 
+        or dict(Counter(reference["cluster"].tolist())) 
+        != {int(k): int(m[k]) for k in active} ): 
+        
+        raise ValueError("ID hoặc số dòng tham chiếu không khớp model.") 
+    
+    if any(row.aspect != labels.get(row.cluster) for row in reference.itertuples()): 
+        raise ValueError("Nhãn tham chiếu không khớp bảng tên cụm.") 
+    return m, n, nkw, words, alpha, beta, active, labels, reference 
+
+def reference_key(row): 
+    return json.dumps( 
+        [str(row.video_id), str(row.text), token_list(row.tokens)], 
+        ensure_ascii=False, ) 
+
+def run_fixed_model(args, parser): 
+    folder = args.model_dir.resolve() 
+    manifest_path = folder / "model_manifest.json" 
+    if args.mode != "seal": 
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8")) 
+        
+        if set(
+            manifest.get("sha256", {})) != set(FIXED_FILES): 
+            raise ValueError("Manifest thiếu file model.")
+
+        for name in FIXED_FILES: 
+            if file_sha256(folder / name) != manifest["sha256"][name]: 
+                raise ValueError(f"File model đã thay đổi: {name}") 
+    m, n, nkw, words, alpha, beta, active, labels, reference = load_fixed_package(folder) 
+    
+    if args.mode == "seal": 
+        payload = {
+            "version": folder.name, "sha256": {name: file_sha256(folder / name) for name in FIXED_FILES}} 
+        
+        with manifest_path.open("x", encoding="utf-8") as stream: 
+            json.dump(payload, stream, ensure_ascii=False, indent=2) 
+        
+        print("Đã khóa bộ model:", folder, flush=True) 
+        return 
+    
+    if args.mode == "check": 
+        print("Bộ model hợp lệ:", folder, flush=True) 
+        return 
+    
+    if args.output_dir is None: 
+        parser.error("Cần --output-dir khi dự đoán.") 
+    
+    output = args.output_dir.resolve() 
+    for protected in (folder, args.input.resolve()): 
+        if output == protected or output in protected.parents or protected in output.parents: 
+            raise ValueError("Output phải tách biệt model và dữ liệu đầu vào.") 
+        
+    if output.exists(): 
+        raise FileExistsError(f"Đã có {output}; chọn thư mục mới.") 
+        
+    files = sorted(args.input.glob("*.parquet")) if args.input.is_dir() else [args.input] 
+    if not files or any(not p.is_file() for p in files): 
+        raise FileNotFoundError(f"Không có Parquet: {args.input}") 
+        
+    df = pd.concat([pd.read_parquet(p) for p in files], ignore_index=True) 
+    if not {"comment_id", "video_id", "text", "tokens"} <= set(df.columns): 
+        raise ValueError("Cần Silver có comment_id, video_id, text, tokens.") 
+        
+    if {"cluster", "aspect", "sentiment"} & set(df.columns): 
+        raise ValueError("Đầu vào phải là Silver chưa gán nhãn.") 
+        
+    input_rows = len(df) 
+        
+    df = df.dropna(subset=["comment_id", "video_id", "text"]).copy() 
+    for col in ("comment_id", "video_id"): 
+        df[col] = df[col].astype(str).str.strip() 
+
+    df = df[df["comment_id"].ne("") & df["video_id"].ne("") & df["text"].astype(str).str.strip().ne("")] 
+    if "is_reply" in df.columns: 
+        df = df[~df["is_reply"].fillna(False).astype(bool)] 
+            
+    df = df.sort_values("comment_id", kind="stable").drop_duplicates("comment_id").copy() 
+        
+    if df.empty: 
+        raise ValueError("Silver không có bình luận hợp lệ.") 
+        
+    df["tokens"] = df["tokens"].map(token_list) 
+    if "text_clean" not in df.columns: 
+        df["text_clean"] = df["text"].map(clean_for_dedup) 
+        
+    df["text_gsdmm"] = df["tokens"].map(" ".join) 
+    baseline = {str(row.comment_id): (reference_key(row), int(row.cluster)) for row in reference.itertuples()} 
+    vocab = {word: i for i, word in enumerate(words)} 
+    assigned, counts = [], Counter() 
+        
+    for row in df.itertuples(): 
+        old = baseline.get(row.comment_id) 
+        if old is not None and old[0] == reference_key(row): 
+            assigned.append(old[1]) 
+            counts["reference_kept"] += 1 
+            continue 
+            
+        known = Counter(vocab[w] for w in row.tokens if w in vocab) 
+                
+        length = sum(known.values())
+        if length < 2: 
+            assigned.append(-1) 
+            counts["insufficient_known_tokens"] += 1 
+            continue 
+            
+        lp = np.log(m[active] + alpha) 
+        for word, count in known.items(): 
+            for j in range(count): 
+                lp += np.log(nkw[active, word] + beta + j) 
+        for j in range(length): 
+            lp -= np.log(n[active] + len(words) * beta + j) 
+        assigned.append(int(active[np.argmax(lp)])) 
+        counts["inferred"] += 1 
+
+    df["cluster"] = assigned 
+    df["aspect"] = [labels[k] if k != -1 else "Khác" for k in assigned] 
+
+    report = { 
+        "model": folder.name, 
+        "manifest_sha256": file_sha256(manifest_path), 
+        "input_rows": input_rows, 
+        "output_rows": len(df), 
+        "reference_kept": counts["reference_kept"], 
+        "inferred": counts["inferred"], 
+        "insufficient_known_tokens": counts["insufficient_known_tokens"], 
+
+        "method": "frozen_dmm_predictive_argmax_with_training_reference", 
+        "note": "cluster=-1: ít hơn 2 token trong từ điển; aspect=Khác; vẫn chạy sentiment.", 
+        } 
+
+    output.parent.mkdir(parents=True, exist_ok=True) 
+    with tempfile.TemporaryDirectory(prefix=".topics-", dir=output.parent) as work: 
+            snapshot = Path(work) / "result" 
+            snapshot.mkdir() 
+            df.to_parquet(snapshot / "comments_with_aspects.parquet", index=False) 
+            (snapshot / "topic_prediction_summary.json").write_text( 
+                json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8" 
+            ) 
+            snapshot.rename(output) 
+    print(json.dumps(report, ensure_ascii=False, indent=2), flush=True)
+
+def main(): 
+    parser = argparse.ArgumentParser(description=__doc__) 
+    parser.add_argument("seed", nargs="?", type=int, default=42) 
+    parser.add_argument("--mode", choices=["train", "predict", "seal", "check"], default="train") 
+    parser.add_argument("--model-dir", type=Path) 
+    parser.add_argument("--input", type=Path, default=Path("/opt/data/silver/comments_clean")) 
+    parser.add_argument("--output-dir", type=Path) 
+    parser.add_argument("--iterations", type=int, default=30) 
+    args = parser.parse_args() 
+    if args.mode != "train": 
+        if args.model_dir is None: 
+            parser.error("Cần --model-dir khi predict/seal/check.") 
+        run_fixed_model(args, parser) 
+        return 
+    if args.output_dir is None: 
+        args.output_dir = Path("/opt/data/gold")
+        
     if args.seed < 0 or args.iterations < 1:
         parser.error("seed >= 0; iterations >= 1")
 

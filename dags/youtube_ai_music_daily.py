@@ -39,6 +39,22 @@ with DAG(
     doc_md=__doc__,
 ) as dag:
 
+    @task 
+    def validate_ml_runtime(): 
+        # Fail early if Docker Desktop/socket or dedicated ML runner containers are unavailable. 
+        from ytb.ml_containers import check_ml_runtime, run_ml_job 
+ 
+        result = check_ml_runtime() 
+        run_ml_job( 
+            "ytb-gsdmm-runner", 
+            [ 
+                "gsdmm_train.py", 
+                "--mode", "check", 
+                "--model-dir", "/opt/data/models/gsdmm_v1", 
+            ], 
+        ) 
+        return result
+
     @task
     def discover_videos():
         from ytb.discover import run_discover   # import trong task để lỗi thư viện không làm hỏng việc đọc DAG
@@ -76,18 +92,13 @@ with DAG(
         from ytb.spark_mart import run_mart
 
         return run_mart()
-    @task
-    def publish():
-        #_placeholder("publish", "đẩy bảng Mart lên BigQuery cho Looker Studio")
-        from ytb.publish import run_publish
-
-        return run_publish()
+    
     (
-        discover_videos()
+        validate_ml_runtime()
+        >> discover_videos()
         >> snapshot_stats()
         >> fetch_comments()
         >> spark_core()
         >> spark_business()
         >> spark_mart()
-        >> publish()
     )

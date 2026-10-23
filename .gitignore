@@ -38,3 +38,4 @@ _SUCCESS
 # GSDMM config cần được version-control (mapping nhãn đã review, không chứa secret).
 !gsdmm_sentiment/config/
 !gsdmm_sentiment/config/*.json
+!gsdmm_sentiment/config/cluster_top_words_seed42.csv

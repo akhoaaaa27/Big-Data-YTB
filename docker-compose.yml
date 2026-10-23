@@ -39,6 +39,8 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
     - ${AIRFLOW_PROJ_DIR:-.}/ytb:/opt/airflow/ytb
+    - ${AIRFLOW_PROJ_DIR:-.}/gsdmm_sentiment:/opt/airflow/gsdmm_sentiment:ro
+    - /var/run/docker.sock:/var/run/docker.sock
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
